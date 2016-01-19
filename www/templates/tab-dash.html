@@ -1,0 +1,35 @@
+<ion-view view-title="Dashboard">
+    <ion-content class="padding">
+        <ion-list>
+            <ion-item ng-repeat="account in accountList">
+                <div class="card">
+                    <div class="item item-text-wrap">
+                        <h2><span ng-bind="account.name"></span></h2>
+                        <div class="row">
+                            <div class="col">
+                                <p>Bank: <span ng-bind="account.bank"></span></p>
+                            </div>
+                            <div class="col">
+                                <p>Currency: <span ng-bind="account.currency"></span></p>
+                            </div>
+                        </div>            
+                        <div class="row">
+                            <div class="col">
+                                <p>Credit Limit</p>
+                                <p><span ng-bind="account.balances.credit_limit"></span></p>
+                            </div>
+                            <div class="col">
+                                <p>Outstanding Balance</p>
+                                <p><span ng-bind="account.balances.outstanding_balance"></span></p>
+                            </div>
+                            <div class="col">
+                                <p>Available Balance</p>
+                                <p><span ng-bind="account.balances.outstanding_balance"></span></p>
+                            </div>
+                        </div>            
+                    </div>
+                </div>
+            </ion-item>
+        </ion-list>
+    </ion-content>
+</ion-view>

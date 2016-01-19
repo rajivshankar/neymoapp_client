@@ -1,0 +1,12 @@
+{
+  "name": "moneyPro",
+  "app_id": "e4e6f36b",
+  "gulpStartupTasks": [
+    "sass",
+    "watch"
+  ],
+  "watchPatterns": [
+    "www/**/*",
+    "!www/lib/**/*"
+  ]
+}
