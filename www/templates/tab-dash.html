@@ -1,35 +1,26 @@
 <ion-view view-title="Dashboard">
     <ion-content class="padding">
         <ion-list>
-            <ion-item ng-repeat="account in accountList">
-                <div class="card">
-                    <div class="item item-text-wrap">
-                        <h2><span ng-bind="account.name"></span></h2>
-                        <div class="row">
-                            <div class="col">
-                                <p>Bank: <span ng-bind="account.bank"></span></p>
-                            </div>
-                            <div class="col">
-                                <p>Currency: <span ng-bind="account.currency"></span></p>
-                            </div>
-                        </div>            
-                        <div class="row">
-                            <div class="col">
-                                <p>Credit Limit</p>
-                                <p><span ng-bind="account.balances.credit_limit"></span></p>
-                            </div>
-                            <div class="col">
-                                <p>Outstanding Balance</p>
-                                <p><span ng-bind="account.balances.outstanding_balance"></span></p>
-                            </div>
-                            <div class="col">
-                                <p>Available Balance</p>
-                                <p><span ng-bind="account.balances.outstanding_balance"></span></p>
-                            </div>
-                        </div>            
-                    </div>
+            <div  class="card" ng-repeat="account in accountList">
+                <div class="item item-text-wrap">
+                    <strong><span ng-bind="account.name"></span></strong> (<span ng-bind="account.bank"></span>)
+                    <div class="row">
+                        <div class="col">
+                            <p ng-show="account.balances.credit_limit">Limit</p>
+                            <p>{{account.balances.credit_limit | currency: '&#8377 '}}</p>
+                        </div>
+                        <div class="col">
+                            <p ng-show="account.balances.outstanding_balance">O/S</p>
+                            <p>{{account.balances.outstanding_balance | currency: '&#8377 '}}</p>
+                        </div>
+                        <div class="col">
+                            <p ng-show="account.balances.available_balance">Available</p>
+                            <p ng-hide="account.balances.available_balance">Balance Unavailable</p>
+                            <p>{{account.balances.available_balance | currency: '&#8377 '}}</p>
+                        </div>
+                    </div>            
                 </div>
-            </ion-item>
+            </div>
         </ion-list>
     </ion-content>
 </ion-view>

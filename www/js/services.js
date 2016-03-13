@@ -1,32 +1,33 @@
-angular.module('moneyProApp.services', [])
+// File: services.js
 
-.factory('Accounts', ['$http', function($http) {
-    return {
-        all: function() {
-                return $http.get('https://moneybee-20151115.herokuapp.com/restful/accounts/')
-                    .then(
-                        function(response) {
-                            return response;
-                        },
-                        function(errResponse) {
-                            return errResponse;
-                        }
-                    );
+var services = angular.module('moneyProApp.services',   ['ngLodash'
+                                                        , 'restangular']);
+
+services.config(['RestangularProvider', function(RestangularProvider) {
+    _.contains = _.includes // to have lodash to work with Restangular
+    // If Restangular ever updates to lodash 4.0 remove this.
+    baseUrlStr = 'https://moneybee-20151115.herokuapp.com/restful';
+    baseUrlStr = 'http://localhost:8000/restful';
+    RestangularProvider.setBaseUrl(baseUrlStr);
+    RestangularProvider.setRequestSuffix('.json');
+
+    // add a response intereceptor
+    splitGetList = function(data, operation, what, url, response, deferred) {
+        var extractedData;
+        // .. to look for getList operations
+        if (operation === "getList") {
+            // .. and handle the data and meta data
+            extractedData = data.results;
+            extractedData.count = data.count;
+            extractedData.next = data.next;
+            extractedData.previous = data.previous;
+        } else {
+            extractedData = data.results;
         }
+        return extractedData;
     };
-}])
-.factory('UTexts', ['$http', function($http) {
-    return {
-        all: function() {
-                return $http.get('http://moneybee-20151115.herokuapp.com/restful/unprocessed_text_data/')
-                    .then(
-                        function(response) {
-                            return response;
-                        },
-                        function(errResponse) {
-                            return errResponse;
-                        }
-                    );
-        }
-    };
+        RestangularProvider.addResponseInterceptor(splitGetList);
 }]);
+
+                            
+

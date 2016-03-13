@@ -1,7 +1,7 @@
 <ion-view view-title="Unprocessed Texts">
     <ion-content>
-        <div class="card">
-            <div class="item item-text-wrap" class="padding" ng-repeat="text in uTextList">
+        <div class="card" ng-repeat="text in uTextList">
+            <div class="item item-text-wrap" class="padding" >
                 <p ng-bind="text.text_message"></p>
             </div>
         </div>

@@ -1,0 +1,31 @@
+<ion-view view-title="Device Information">
+    <ion-content>
+        <div class="card">
+            <div class="item item-text-wrap">
+                <p><strong>Cordova: </strong><span ng-bind="cordova"></span></p>
+                <p><strong>Model: </strong><span ng-bind="model"></span></p>
+                <p><strong>Platform: </strong><span ng-bind="platform"></span></p>
+                <p><strong>UUID: </strong><span ng-bind="UUID"></span></p>
+                <p><strong>Version: </strong><span ng-bind="version"></span></p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="item item-text-wrap">
+                <p><strong>Inside: </strong><span ng-bind="checkDevice"></span></p>
+                <p><strong>Model: </strong><span ng-bind="deviceModel"></span></p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="item item-text-wrap">
+                <p><strong>Inside: </strong><span ng-bind="checkSim"></span></p>
+                <p><strong>Carrier Name: </strong><span ng-bind="carrierName"></span></p>
+                <p><strong>Country Code: </strong><span ng-bind="countryCode"></span></p>
+                <p><strong>Mobile Country Code: </strong><span ng-bind="mobileCountryCode"></span></p>
+                <p><strong>Mobile Network Code: </strong><span ng-bind="mobileNetworkCode "></span></p>
+                <p><strong>Phone Number: </strong><span ng-bind="phoneNumber"></span></p>
+                <p><strong>Device ID (IMEI): </strong><span ng-bind="deviceId"></span></p>
+                <p><strong>User Token: </strong><span ng-bind="userToken"></span></p>
+            </div>
+        </div>
+    </ion-content>
+</ion-view>

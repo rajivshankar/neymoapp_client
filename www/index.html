@@ -3,8 +3,10 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-    <title>MoneyPro v1</title>
+    <title>MoneyPro</title>
 
+    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
 
     <!-- compiled css output -->
     <link href="css/ionic.app.css" rel="stylesheet">
@@ -12,13 +14,36 @@
     <!-- ionic/angularjs js -->
     <script src="lib/ionic/js/ionic.bundle.js"></script>
 
+    <script src="lib/restangular/dist/restangular.js"></script>
+    <script src="lib/ng-lodash/build/ng-lodash.min.js"></script>
+    <script src="lib/lodash/dist/lodash.min.js"></script>
+    <script src="lib/ngstorage/ngStorage.js"></script>
+    <script src="lib/ngCordova/dist/ng-cordova.js"></script>
+
     <!-- cordova script (this will be a 404 during development) -->
-    <script src="cordova.js"></script>
+    <script src="cordova.js"></script>  
 
     <!-- your app's js -->
     <script src="js/app.js"></script>
     <script src="js/controllers.js"></script>
     <script src="js/services.js"></script>
+    
+    <!-- params module's js -->
+    <script src="js/params/params.js"></script>
+    
+    <!-- handshake module's js -->
+    <script src="js/handshake/controllers.js"></script>
+    <script src="js/handshake/services.js"></script>
+
+    <!-- dashboard module's js -->
+    <script src="js/dashboard/controllers.js"></script>
+    <script src="js/dashboard/services.js"></script>
+
+    <!-- reports module's js -->
+        <!-- unprocessedSMS report module's js -->
+    <script src="js/reports/unprocessedSMS/controllers.js"></script>
+    <script src="js/reports/unprocessedSMS/services.js"></script>
+
   </head>
   <body ng-app="moneyProApp">
     <!--

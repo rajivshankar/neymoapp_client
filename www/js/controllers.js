@@ -1,25 +1,54 @@
-angular.module('moneyProApp.controllers', [])
+// File: controllers.js
+var controllers = angular.module('moneyProApp.controllers', []);
 
-.controller('DashCtrl', ['$scope', 'Accounts', function($scope, Accounts) {
-    Accounts.all().then(function(resp){
-        $scope.accountList = resp.data.results;
-    });
-    var a = 1;
-}])
+controllers.controller('DevInfoCtrl', ['$scope'
+                                        , '$ionicPlatform'
+                                        , '$localStorage'
+                                        , '$cordovaDevice'
+                                        , function($scope
+                                                    , $ionicPlatform
+                                                    , $localStorage
+                                                    , $cordovaDevice
+                                        ) {
+    var self = this;
+    
+    $ionicPlatform.ready(function() {
+        
+        if ($cordovaDevice) {
+            $scope.cordova = $cordovaDevice.getCordova();
+            $scope.model = $cordovaDevice.getModel();
+            $scope.platform = $cordovaDevice.getPlatform();
+            $scope.UUID = $cordovaDevice.getUUID();
+            $scope.version = $cordovaDevice.getVersion();
+        }
+        
+        if (device) {
+            $scope.checkDevice = "Got Inside";
+            $scope.deviceModel = device.model
+        } else {
+            $scope.checkDevice = "Never Inside";
+        }
 
-.controller('UTextsCtrl', ['$scope', 'UTexts', function($scope, UTexts) {
-    UTexts.all().then(function(resp){
-        $scope.uTextList = resp.data.results;
-    });
-    var a = 1;
-}])
-
-.controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
-  $scope.chat = Chats.get($stateParams.chatId);
-})
-
-.controller('AccountCtrl', function($scope) {
-  $scope.settings = {
-    enableFriends: true
-  };
-});
+        if (window.plugins.sim) {
+            $scope.checkSim = "Got Inside";
+            window.plugins.sim.getSimInfo(function(result){
+                $scope.carrierName = result.carrierName;
+                $scope.countryCode = result.countryCode;
+                $scope.mobileCountryCode = result.mcc;
+                $scope.mobileNetworkCode = result.mnc;
+                $scope.phoneNumber = result.phoneNumber;
+                $scope.deviceId = result.deviceId;
+            }, function(errResult){
+                console.log(errResult);
+            });
+        } else {
+            $scope.checkSim = "Never Inside";
+        }
+        if ($localStorage.userToken) {
+            $scope.userToken = $localStorage.userToken;
+        } else {
+            $scope.userToken = "Undefined"
+        }
+   });
+   
+}]);
