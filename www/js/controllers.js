@@ -21,14 +21,12 @@ controllers.controller('DevInfoCtrl', ['$scope'
             $scope.UUID = $cordovaDevice.getUUID();
             $scope.version = $cordovaDevice.getVersion();
         }
-        
         if (device) {
             $scope.checkDevice = "Got Inside";
             $scope.deviceModel = device.model
         } else {
             $scope.checkDevice = "Never Inside";
         }
-
         if (window.plugins.sim) {
             $scope.checkSim = "Got Inside";
             window.plugins.sim.getSimInfo(function(result){
@@ -44,11 +42,21 @@ controllers.controller('DevInfoCtrl', ['$scope'
         } else {
             $scope.checkSim = "Never Inside";
         }
+        $scope.device_id = $localStorage.device;
+        $scope.uuid = $localStorage.uuid;
+        $scope.myErr = $localStorage.myErr;
+
         if ($localStorage.userToken) {
             $scope.userToken = $localStorage.userToken;
+            $scope.userID = $localStorage.userID;
+            $scope.devicePK = $localStorage.devicePK;
         } else {
             $scope.userToken = "Undefined"
         }
    });
-   
+
+    $scope.clearUserToken = function() {
+        delete $localStorage.userToken;
+        console.log("userToken deleted... " + $localStorage);
+    };
 }]);

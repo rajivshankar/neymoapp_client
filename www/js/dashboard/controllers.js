@@ -5,10 +5,15 @@
  */
 // File: dashboard/controllers.js
 
-controllers.controller('DashCtrl', ['$scope', 'Accounts', function(
-                            $scope,
-                            Accounts) {
+controllers.controller('DashCtrl', ['$scope'
+                                    , 'Accounts'
+                                    , '$localStorage'
+                                    , function($scope
+                                               , Accounts
+                                               , $localStorage
+                                               ) {
     Accounts.all().then(function(resp){
         $scope.accountList = resp;
         });
+    
 }]);

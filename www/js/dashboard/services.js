@@ -13,6 +13,6 @@ services.factory('Accounts', ['$http', 'Restangular'
         all: function() {
             var baseAccounts = Restangular.all('accounts');
             return baseAccounts.getList();
-}
+        }
     };
 }]);

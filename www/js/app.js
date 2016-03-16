@@ -1,3 +1,5 @@
+/* global deviceRec, StatusBar */
+
 // Ionic MoneProApp
 
 // angular.module is a global place for creating, registering and retrieving Angular modules
@@ -13,93 +15,6 @@ var mainApp = angular.module('moneyProApp', ['ionic'
                                             , 'ngStorage'
                                             , 'restangular']);
 
-mainApp.run(['Restangular'
-                , '$localStorage'
-                , '$ionicPlatform'
-                , '$cordovaDevice'
-                , '$http'
-                , function(Restangular
-                            , $localStorage
-                            , $ionicPlatform
-                            , $cordovaDevice
-                            , $http)
-                            {
-    $ionicPlatform.ready(function() {
-        // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-        // for form inputs)
-        if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
-          cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-          cordova.plugins.Keyboard.disableScroll(true);
-
-        }
-    
-        if (window.StatusBar) {
-          // org.apache.cordova.statusbar required
-          StatusBar.styleDefault();
-        }
-        console.log("Inside the ready function in mainapp run")
-
-        if ($localStorage.userToken == null) {
-            var baseDevice = Restangular.all('device'); 
-            var deviceRec = {};
-            /*
-            if ($cordovaDevice) {
-                deviceRec["uuid"] = $cordovaDevice.getUUID();
-                deviceRec["model_name"] = $cordovaDevice.getModel();
-                deviceRec["os_platform"]  = $cordovaDevice.getPlatform();
-                deviceRec["version"] = $cordovaDevice.getVersion();
-            }
-            if (window.plugins.sim) {
-                window.plugins.sim.getSimInfo(function(result){
-                    deviceRec["country_code"] = result.countryCode;
-                    deviceRec["mcc"] = result.mcc;
-                    deviceRec["mnc"] = result.mnc;
-                    deviceRec["phone_number"] = result.phoneNumber;
-                    deviceRec["device_id"] = result.deviceId;
-                }, function(errResult){
-                    console.log(errResult);
-                });
-            }
-            */
-            if (deviceRec["uuid"] == null) {
-                deviceRec["uuid"] = "tempDevice2";
-            }
-            if (deviceRec["device_id"] == null) {
-                deviceRec["device_id"] = "tempDevice_ID";
-            }
-            
-            $http.post('https://moneybee-20151115.herokuapp.com/restful/device/'
-                        , deviceRec).then(function(response){
-               console.log("Successful $http");
-               console.log(response.data.auth_token);
-               $localStorage.userToken = response.data.auth_token;
-            }, function(error){
-                console.log(error.statusText);
-                console.log("Error for $http");
-            });
-            
-            
-            baseDevice.post("device", deviceRec).then(function(response){
-               console.log("POST successa");
-               //$localStorage.userToken = auth_token;
-            }, function(error){
-                console.log(error.statusText);
-                console.log("There was an error while getting token");
-            });
-            console.log(baseDevice);
-        }
-    });
-    /*
-     * set the header to contain authorisation code.
-     * If the auth code is not present, send the details of the device     * 
-     */
-    
-    if ($localStorage.userToken) {
-        // set default header "token"
-        authTokenValue = "Token " + $localStorage.userToken;
-        Restangular.setDefaultHeaders({Authorization: authTokenValue});
-    }
-}]);
 
 mainApp.config(function($stateProvider, $urlRouterProvider) {
 
@@ -154,3 +69,119 @@ mainApp.config(function($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise('/tab/dash');
 
 });
+
+mainApp.run(['Restangular'
+                , '$localStorage'
+                , '$ionicPlatform'
+                , '$cordovaDevice'
+                , '$http'
+                , 'Handshake'
+                , function(Restangular
+                            , $localStorage
+                            , $ionicPlatform
+                            , $cordovaDevice
+                            , $http
+                            , Handshake
+                            ) {
+
+    var deviceRecStr = '{';
+    var deviceRec = {};
+    var baseDevice = Restangular.all();
+    delete $localStorage.device;
+    delete $localStorage.uuid;
+    delete $localStorage.myErr;
+    delete $localStorage.error;
+    
+    $ionicPlatform.ready(function() {
+        // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
+        // for form inputs)
+        if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
+          cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+          cordova.plugins.Keyboard.disableScroll(true);
+
+        }
+    
+        if (window.StatusBar) {
+          // org.apache.cordova.statusbar required
+          StatusBar.styleDefault();
+        }
+        // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
+        // for form inputs)
+
+        if ($localStorage.userToken == null) {
+            if ($cordovaDevice) {
+                deviceRecStr += '"uuid": "' + $cordovaDevice.getUUID() + '"';
+                deviceRecStr += ', "model_name": "' + $cordovaDevice.getModel() + '"';
+                deviceRecStr += ', "os_platform": "' + $cordovaDevice.getPlatform() + '"';
+                deviceRecStr += ', "version": "' + $cordovaDevice.getVersion() + '"';
+
+                deviceRec.uuid = $cordovaDevice.getUUID();
+                deviceRec.model_name = $cordovaDevice.getModel();
+                deviceRec.os_platform = $cordovaDevice.getPlatform();
+                deviceRec.version = $cordovaDevice.getVersion();
+                
+            }
+            if (window.plugins.sim) {
+                window.plugins.sim.getSimInfo(function(result) {
+                deviceRecStr += ', "country_code": "' + result.countryCode + '"';
+                deviceRecStr += ', "mcc": ' + (result.mcc? result.mcc: 'null');
+                deviceRecStr += ', "mnc": ' + (result.mnc? result.mnc: 'null');
+                deviceRecStr += ', "phone_number": ' + (result.phoneNumber? result.phoneNumber : 'null');
+                deviceRecStr += ', "device_id": "' + result.deviceId + '"';
+                deviceRecStr += '}';
+
+                deviceRec.country_code = result.countryCode;
+                deviceRec.mcc = result.mcc;
+                deviceRec.mnc = result.mnc;
+                deviceRec.phone_number = result.phoneNumber;
+                deviceRec.device_id = result.deviceId;
+
+                $localStorage.device = deviceRecStr;
+                deviceRec = JSON.parse(deviceRecStr)
+//                deviceRecStr += $localStorage.device;
+                $localStorage.uuid = deviceRec.uuid;
+                $localStorage.device = deviceRec.device_id;
+//                baseDevice.post("device", deviceRec).then(function(response){
+//                   console.log("POST successa");
+//                   $localStorage.error = response.data.auth_token;
+//                   $localStorage.error = "Success device setup";
+//                   
+//                   //$localStorage.userToken = auth_token;
+//                }, function(error){
+//                   $localStorage.error = error.statusText;
+//                    console.log("There was an error while getting token" + error.statusText);
+//                });
+//                console.log(baseDevice);
+                
+                $http.post('https://moneybee-20151115.herokuapp.com/restful/device.json'
+                // $http.post('http://localhost:8000/restful/device/'
+                            , deviceRec).then(function(response){
+                    console.log("Successful $http. Auth Token: " + response.data.auth_token);
+                    $localStorage.myErr = "Auth Token: " + response.data.auth_token;
+                    $localStorage.userToken = response.data.auth_token;
+                    $localStorage.userID = response.data.user_id;
+                    $localStorage.devicePK = response.data.id;
+
+                    if ($localStorage.userToken) {
+                        // set default header "token"
+                        authTokenValue = "Token " + $localStorage.userToken;
+                        Restangular.setDefaultHeaders({Authorization: authTokenValue});
+                    }
+                }, function(error){
+                    $localStorage.myErr = "Error for $http:" + error.statusText + deviceRec;
+                    console.log("Error for $http: " + error.statusText);
+                });
+
+                }, function(errResult){
+                        console.log(errResult);
+                        $localStorage.error = "Sim read err:" + errResult.statusText;
+                });
+            }
+        }
+    });
+    /*
+     * set the header to contain authorisation code.
+     * If the auth code is not present, send the details of the device     * 
+     */
+    
+}]);
