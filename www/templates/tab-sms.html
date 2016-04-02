@@ -1,0 +1,20 @@
+<ion-view view-title="SMS List">
+    <ion-content class="padding">
+        <ion-list>
+            <div  class="card animated bounceIn" ng-repeat="sms in smsList">
+                <div class="item item-assertive item-divider" ng-show="isNumber(sms.address)">
+                    <strong><span ng-bind="sms.address"></span></strong>
+                    <span style="float:right;"><i>Personal - Ignore </i><i class="icon ion-close-circled"></i></span>
+                </div>
+                    <div class="item item-positive item-divider" ng-hide="isNumber(sms.address)">
+                    <strong><span ng-bind="sms.address"></span></strong>
+                    <span style="float:right;"><i>Service text </i><i class="icon ion-checkmark-circled"></i></span>
+                </div>
+                <div class="item item-text-wrap">
+                    <span ng-bind="sms.body"></span>
+                    <p></p>
+                </div>
+            </div>
+        </ion-list>
+    </ion-content>
+</ion-view>

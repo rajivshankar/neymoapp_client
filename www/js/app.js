@@ -13,6 +13,7 @@ var mainApp = angular.module('moneyProApp', ['ionic'
                                             , 'moneyProApp.params'
                                             , 'ngCordova'
                                             , 'ngStorage'
+                                            , 'ngAnimate'
                                             , 'restangular']);
 
 mainApp.run(['Restangular'
@@ -169,6 +170,16 @@ mainApp.config(function($stateProvider, $urlRouterProvider) {
             }
         }
       })
+    .state('tab.smsList', {
+        url: '/sms-list',
+        views: {
+            'tab-sms-list': {
+                templateUrl: 'templates/tab-sms.html',
+                controller: 'SMSListCtrl',
+                controllerAs: 'smsListCtrl'
+          }
+        }
+    })
     .state('tab.devInfo', {
         url: '/dev-info',
         views: {
