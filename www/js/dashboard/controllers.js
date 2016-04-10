@@ -6,14 +6,17 @@
 // File: dashboard/controllers.js
 
 controllers.controller('DashCtrl', ['$scope'
+                                    , '$http'
                                     , 'Accounts'
                                     , '$localStorage'
+                                    , 'AUTH_EVENTS'
                                     , function($scope
-                                               , Accounts
-                                               , $localStorage
+                                                , $http
+                                                , Accounts
+                                                , $localStorage
+                                                , AUTH_EVENTS
                                                ) {
     Accounts.all().then(function(resp){
         $scope.accountList = resp;
         });
-    
 }]);

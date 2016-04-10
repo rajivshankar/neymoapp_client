@@ -14,30 +14,23 @@ var mainApp = angular.module('moneyProApp', ['ionic'
                                             , 'ngCordova'
                                             , 'ngStorage'
                                             , 'ngAnimate'
-                                            , 'restangular']);
+                                            , 'restangular'
+                                        ]);
 
 mainApp.run(['Restangular'
+                , '$rootScope'
                 , '$localStorage'
                 , '$ionicPlatform'
                 , '$cordovaDevice'
                 , '$http'
-                , 'Handshake'
                 , function(Restangular
+                            , $rootScope
                             , $localStorage
                             , $ionicPlatform
                             , $cordovaDevice
                             , $http
-                            , Handshake
                             ) {
 
-    var deviceRecStr = '{';
-    var deviceRec = {};
-    var baseDevice = Restangular.all();
-    delete $localStorage.device;
-    delete $localStorage.uuid;
-    delete $localStorage.myErr;
-    delete $localStorage.error;
-    
     $ionicPlatform.ready(function() {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
@@ -53,83 +46,7 @@ mainApp.run(['Restangular'
         }
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
-
-        if ($localStorage.userToken == null) {
-            if ($cordovaDevice) {
-                deviceRecStr += '"uuid": "' + $cordovaDevice.getUUID() + '"';
-                deviceRecStr += ', "model_name": "' + $cordovaDevice.getModel() + '"';
-                deviceRecStr += ', "os_platform": "' + $cordovaDevice.getPlatform() + '"';
-                deviceRecStr += ', "version": "' + $cordovaDevice.getVersion() + '"';
-
-                deviceRec.uuid = $cordovaDevice.getUUID();
-                deviceRec.model_name = $cordovaDevice.getModel();
-                deviceRec.os_platform = $cordovaDevice.getPlatform();
-                deviceRec.version = $cordovaDevice.getVersion();
-                
-            }
-            if (window.plugins.sim) {
-                window.plugins.sim.getSimInfo(function(result) {
-                deviceRecStr += ', "country_code": "' + result.countryCode + '"';
-                deviceRecStr += ', "mcc": ' + (result.mcc? result.mcc: 'null');
-                deviceRecStr += ', "mnc": ' + (result.mnc? result.mnc: 'null');
-                deviceRecStr += ', "phone_number": ' + (result.phoneNumber? result.phoneNumber : 'null');
-                deviceRecStr += ', "device_id": "' + result.deviceId + '"';
-                deviceRecStr += '}';
-
-                deviceRec.country_code = result.countryCode;
-                deviceRec.mcc = result.mcc;
-                deviceRec.mnc = result.mnc;
-                deviceRec.phone_number = result.phoneNumber;
-                deviceRec.device_id = result.deviceId;
-
-                $localStorage.device = deviceRecStr;
-                deviceRec = JSON.parse(deviceRecStr)
-//                deviceRecStr += $localStorage.device;
-                $localStorage.uuid = deviceRec.uuid;
-                $localStorage.device = deviceRec.device_id;
-//                baseDevice.post("device", deviceRec).then(function(response){
-//                   console.log("POST successa");
-//                   $localStorage.error = response.data.auth_token;
-//                   $localStorage.error = "Success device setup";
-//                   
-//                   //$localStorage.userToken = auth_token;
-//                }, function(error){
-//                   $localStorage.error = error.statusText;
-//                    console.log("There was an error while getting token" + error.statusText);
-//                });
-//                console.log(baseDevice);
-                
-                $http.post('https://moneybee-20151115.herokuapp.com/restful/device.json'
-                // $http.post('http://localhost:8000/restful/device/'
-                            , deviceRec).then(function(response){
-                    console.log("Successful $http. Auth Token: " + response.data.auth_token);
-                    $localStorage.myErr = "Auth Token: " + response.data.auth_token;
-                    $localStorage.userToken = response.data.auth_token;
-                    $localStorage.userID = response.data.user_id;
-                    $localStorage.devicePK = response.data.id;
-
-                    if ($localStorage.userToken) {
-                        // set default header "token"
-                        authTokenValue = "Token " + $localStorage.userToken;
-                        Restangular.setDefaultHeaders({Authorization: authTokenValue});
-                    }
-                }, function(error){
-                    $localStorage.myErr = "Error for $http:" + error.statusText + deviceRec;
-                    console.log("Error for $http: " + error.statusText);
-                });
-
-                }, function(errResult){
-                        console.log(errResult);
-                        $localStorage.error = "Sim read err:" + errResult.statusText;
-                });
-            }
-        }
     });
-    /*
-     * set the header to contain authorisation code.
-     * If the auth code is not present, send the details of the device     * 
-     */
-    
 }]);
 
 mainApp.config(function($stateProvider, $urlRouterProvider) {
@@ -144,7 +61,9 @@ mainApp.config(function($stateProvider, $urlRouterProvider) {
     .state('tab', {
     url: '/tab',
     abstract: true,
-    templateUrl: 'templates/tabs.html'
+    templateUrl: 'templates/tabs.html',
+    controller: 'AppCtrl',
+    controllerAs: 'appCtrl'
   })
 
   // Each tab has its own nav history stack:
@@ -169,7 +88,8 @@ mainApp.config(function($stateProvider, $urlRouterProvider) {
                 controllerAs: 'uTextsCtrl'
             }
         }
-      })
+    })
+
     .state('tab.smsList', {
         url: '/sms-list',
         views: {
@@ -180,6 +100,7 @@ mainApp.config(function($stateProvider, $urlRouterProvider) {
           }
         }
     })
+
     .state('tab.devInfo', {
         url: '/dev-info',
         views: {
@@ -189,10 +110,20 @@ mainApp.config(function($stateProvider, $urlRouterProvider) {
                 controllerAs: 'devInfoCtrl'
           }
         }
+     })
+
+    .state('tab.debugInfo', {
+        url: '/debug-info',
+        views: {
+            'tab-debug-info': {
+                templateUrl: 'templates/tab-debug-info.html',
+                controller: 'DebugInfoCtrl',
+                controllerAs: 'debugInfoCtrl'
+          }
+        }
     });
 
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/tab/dash');
 
 });
-

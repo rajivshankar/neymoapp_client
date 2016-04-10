@@ -6,9 +6,11 @@
 
 // File: dashboard/services.js
 
-services.factory('Accounts', ['$http', 'Restangular'
-                                , function($http
-                                            , Restangular) {
+services.factory('Accounts', ['$http'
+                            , 'Restangular'
+                            , function($http
+                                        , Restangular
+                            ) {
     return {
         all: function() {
             var baseAccounts = Restangular.all('accounts');
