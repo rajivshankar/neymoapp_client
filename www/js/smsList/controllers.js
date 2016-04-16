@@ -11,12 +11,8 @@ controllers.controller('SMSListCtrl', ['$scope'
                                                , $localStorage
                                                ) {
     $scope.lastSmsUploadDate = new Date("April 01, 2016 11:00:00");
-    
-    if (SMS) {
-        SMS.listSMS({}, function (data) {
-            $scope.smsList = data;
-        });
-    }
+    var sms = {};
+    $scope.smsFilteredList = [];
   
     $scope.isNumber = function (n) {
         $scope.personalText = false;
@@ -51,5 +47,18 @@ controllers.controller('SMSListCtrl', ['$scope'
             return false;
         }
     };
-
+    
+    if (SMS) {
+        SMS.listSMS({}, function (data) {
+            $scope.smsList = data;
+//            console.log("smsList :" + JSON.stringify($scope.smsList));
+            for (i = 0; i < $scope.smsList.length; i+=1) {
+                sms = $scope.smsList[i];
+                if ($scope.checkDate(sms) && !$scope.isNumber(sms.address)) {
+                    $scope.smsFilteredList.push(sms);
+                }
+//                console.log("smsFilteredList: " + JSON.stringify($scope.smsFilteredList));
+            }
+        });
+    }
 }]);

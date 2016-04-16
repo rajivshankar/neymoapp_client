@@ -1,0 +1,15 @@
+curl -H "Content-Type: application/json, Authorization: 'Token 6407dd34c375245c01c98dfe94da17bf7a0a1ac5'" -H -X POST -d '{"username":"xyz","password":"xyz"}' http://localhost:3000/api/login
+
+curl -H "Authorization: Token 6407dd34c375245c01c98dfe94da17bf7a0a1ac5" -X GET https://moneybee-20151115.herokuapp.com/restful/users/ 
+
+curl -H "Authorization: Token 6407dd34c375245c01c98dfe94da17bf7a0a1ac5" -H "Content-Type: application/json" -X POST -d {"location_latitude":null,"location_longitude":null,"text_message":"Test Message","sender":"Lycamobile","sent_datetime":"2016-04-13T15:28:40.000Z","received_datetime":"2016-04-13T15:52:01.988Z","service_centre":"+447404000117"} https://moneybee-20151115.herokuapp.com/restful/text-data/
+
+{"text_message":"Thanks for using our data service. Be aware, if you have email/apps running you will be charged for data usage after your free bundle.Call 322 for detail.","sender":"Web setting","sent_datetime":"2016-04-02T10:06:02.000Z","received_datetime":"2016-04-02T10:18:54.094Z","service_centre":"+447404000111","location_latitude":null,"location_longitude":null}
+
+curl -H "Authorization: Token 6407dd34c375245c01c98dfe94da17bf7a0a1ac5" -H "Content-Type: application/json" -X POST -d '{"text_message":"Amazing offer! Get 9GB of 4G data, unlimited UK calls and texts with our UK plan UL for just £20/30days. To activate text 12544 to 3535, more info at www.lycamobile.co.uk/plans","sender":"Lycamobile","sent_datetime":"2016-04-13T15:28:40.000Z","received_datetime":"2016-04-13T15:52:01.988Z","service_centre":"+447404000117","location_latitude":null,"location_longitude":null}' https://moneybee-20151115.herokuapp.com/restful/text-data/
+
+curl -H "Authorization: Token 6407dd34c375245c01c98dfe94da17bf7a0a1ac5" -H "Content-Type: application/json" -X POST -d @smsData.txt http://localhost:8000/restful/text-data/
+
+curl -H "{Authorization: Token 6407dd34c375245c01c98dfe94da17bf7a0a1ac5, Content-Type: application/json}" -X POST -d '{"uuid":"8a7ec51ec7fd527e","model_name":"XT1072","os_platform":"Android","version":"6.0","country_code":"gb","mcc":234,"mnc":26,"phone_number":9840158535,"device_id":"353310061238131"}' http://localhost:8000/restful/device.json
+
+{"text_message":"Amazing offer! Get 9GB of 4G data, unlimited UK calls and texts with our UK plan UL for just GBP20/30days. To activate text 12544 to 3535, more info at www.lycamobile.co.uk/plans","sender":"Lycamobile","sent_datetime":"2016-04-13T15:28:40.000Z","received_datetime":"2016-04-13T15:52:01.988Z","service_centre":"+447404000117","location_latitude":null,"location_longitude":null}

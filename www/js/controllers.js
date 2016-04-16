@@ -4,17 +4,23 @@ var controllers = angular.module('moneyProApp.controllers', []);
 controllers.controller('AppCtrl', ['$scope'
                                     , '$ionicPlatform'
                                     , '$localStorage'
+                                    , '$sessionStorage'
                                     , '$cordovaDevice'
                                     , '$http'
                                     , 'Restangular'
                                     , 'AppUtils'
+                                    , 'SmsListService'
+                                    , 'AUTH_EVENTS'
                                     , function ($scope
                                                 , $ionicPlatform
                                                 , $localStorage
+                                                , $sessionStorage
                                                 , $cordovaDevice
                                                 , $http
                                                 , Restangular
                                                 , AppUtils
+                                                , SmsListService
+                                                , AUTH_EVENTS
                                     ) {
     /*
      * Define the Login Modal
@@ -30,6 +36,8 @@ controllers.controller('AppCtrl', ['$scope'
     delete $localStorage.uuid;
     delete $localStorage.myErr;
     delete $localStorage.error;
+    
+    $scope.debugMode = $sessionStorage.debugMode;
 
     $ionicPlatform.ready(function() {
         if (!$localStorage.userToken) {
@@ -77,6 +85,7 @@ controllers.controller('AppCtrl', ['$scope'
                     if ($localStorage.userToken) {
                         // set default header "token"
                         authTokenValue = "Token " + $localStorage.userToken;
+                        $http.defaults.headers.common.Authorization = authTokenValue;
                         Restangular.setDefaultHeaders({Authorization: authTokenValue});
                     }
                 }, function(error){
@@ -90,5 +99,24 @@ controllers.controller('AppCtrl', ['$scope'
                 });
             }
         }
+        if(SMS) {
+            SMS.startWatch(function(){
+        		console.log('watching', 'watching started');
+        	}, function(){
+        		console.log('failed to start watching');
+        	});
+        }
     });
+//    delete $localStorage.lastSmsUploadDate;
+    console.log("smsFilteredList null (service): " + JSON.stringify(SmsListService.processSms()));
+
+    smsArriveListener = function (e) {
+        console.log("Fired New Sms function");
+        console.log("new SMS arrival: " + JSON.stringify(SmsListService.processNewSms(e)));
+        console.log("Process old SMS on new arrival: " + JSON.stringify(SmsListService.processSms()));
+    };
+
+    $ionicPlatform.on(AUTH_EVENTS.onSmsArrive, smsArriveListener);
+
+    
 }]);

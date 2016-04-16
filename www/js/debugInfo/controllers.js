@@ -8,9 +8,11 @@
 controllers.controller('DebugInfoCtrl', ['$scope'
                                         , '$localStorage'
                                         , 'AppUtils'
+                                        , 'REST_PATH'
                                         , function ($scope
                                                     , $localStorage
                                                     , AppUtils
+                                                    , REST_PATH
                                         ) {
     
     var d = new Date(Number(1459592334094));
@@ -29,10 +31,11 @@ controllers.controller('DebugInfoCtrl', ['$scope'
     }
     
     console.log("Is +22309040 a number: " + AppUtils.isNumber("+22309040"));
-    console.log("Date :" + d.toString())
-    console.log("Date ISO :" + d.toISOString())
-    d = new Date(Date.now())
-    console.log("Date Now :" + d.toString())
+    console.log("Date :" + d.toString());
+    console.log("Date ISO :" + d.toISOString());
+    d = new Date(Date.now());
+    d = new Date("April 01, 2016 10:59:59");
+    console.log("Date Now :" + d.toString());
 
     $scope.lastSmsUploadDate = new Date("April 01, 2016 11:00:00");
     if (d.getTime() > ($scope.lastSmsUploadDate? $scope.lastSmsUploadDate.getTime() : Date.now())) {
@@ -46,4 +49,7 @@ controllers.controller('DebugInfoCtrl', ['$scope'
     } else {
         console.log("d is lesser than null" );
     }
+    
+    console.log($localStorage.deviceRec);
+    console.log(REST_PATH.host);
 }]);

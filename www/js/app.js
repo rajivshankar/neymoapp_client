@@ -15,6 +15,7 @@ var mainApp = angular.module('moneyProApp', ['ionic'
                                             , 'ngStorage'
                                             , 'ngAnimate'
                                             , 'restangular'
+                                            , 'ngResource'
                                         ]);
 
 mainApp.run(['Restangular'
@@ -47,6 +48,9 @@ mainApp.run(['Restangular'
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
     });
+    if ($localStorage.userToken) {
+        $http.defaults.headers.common.Authorization = "Token " + $localStorage.userToken;
+    }
 }]);
 
 mainApp.config(function($stateProvider, $urlRouterProvider) {
@@ -127,3 +131,4 @@ mainApp.config(function($stateProvider, $urlRouterProvider) {
   $urlRouterProvider.otherwise('/tab/dash');
 
 });
+

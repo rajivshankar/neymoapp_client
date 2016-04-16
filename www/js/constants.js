@@ -9,11 +9,13 @@ mainApp.constant('AUTH_EVENTS', {
     loginRequired: 'event:auth-loginRequired',
     loginConfirmed: 'event:auth-loginConfirmed',
     loginFailed: 'event:auth-login-failed',
-    logoutComplete: 'event:auth-logout-complete'
+    logoutComplete: 'event:auth-logout-complete',
+    refreshData: 'event:refresh-all-data',
+    onSmsArrive: 'onSMSArrive'
 });
 
 mainApp.constant('REST_PATH', {
 //    host: 'http://localhost:8000/restful/',
-    host: 'https://moneybee-20151115.herokuapp.com/restful/device.json',
+    host: 'https://moneybee-20151115.herokuapp.com/restful/',
     device: 'device/'
 });
