@@ -6,21 +6,42 @@
 
 // debugInfo/controllers.js
 controllers.controller('DebugInfoCtrl', ['$scope'
+                                        , '$ionicPlatform'
                                         , '$localStorage'
                                         , 'AppUtils'
                                         , 'REST_PATH'
+                                        , '$cordovaGeolocation'
+                                        , 'DeviceInfoService'
+                                        , '$sce'
+                                        , '$http'
+                                        , '$ionicLoading'
                                         , function ($scope
+                                                    , $ionicPlatform
                                                     , $localStorage
                                                     , AppUtils
                                                     , REST_PATH
+                                                    , $cordovaGeolocation
+                                                    , DeviceInfoService
+                                                    , $sce
+                                                    , $http
+                                                    , $ionicLoading
                                         ) {
-    
+    var posOptions;
     var d = new Date(Number(1459592334094));
+    var tmpUrl = "";
     $scope.deviceRecStr =  $localStorage.deviceRecStr;
     $scope.deviceRec =  $localStorage.deviceRec;
     $scope.device_id = $localStorage.device;
     $scope.uuid = $localStorage.uuid;
     $scope.myErr = $localStorage.myErr;
+    
+    console.log("Before DeviceService call");
+    DeviceInfoService.deviceInfo ()
+    .then (function (deviceRec) {
+        console.log("DeviceRec: " + JSON.stringify(deviceRec));
+    }, function (errMessage) {
+        console.log("Device Rec Error: " + Message);
+    });
 
     if ($localStorage.userToken) {
         $scope.userToken = $localStorage.userToken;
@@ -50,6 +71,19 @@ controllers.controller('DebugInfoCtrl', ['$scope'
         console.log("d is lesser than null" );
     }
     
-    console.log($localStorage.deviceRec);
+    console.log("Local Storage DeviceRec: " + $localStorage.deviceRec);
     console.log(REST_PATH.host);
+
+    DeviceInfoService.geoLocation()
+    .then (function (coordsData) {
+        $scope.latitude  = coordsData.latitude;
+        $scope.longitude = coordsData.longitude;
+//        $scope.googleUrl = $sce.getTrustedResourceUrl("https://maps.googleapis.com/maps/api/staticmap?center="+$scope.latitude + "," + $scope.longitude+"&zoom=15&size=600x300&maptype=roadmap&key=AIzaSyCmU7xiNr4nqA03zEnZxutHc-a9p5epvaE");
+        $scope.googleUrl = $sce.getTrustedResourceUrl("https://maps.googleapis.com/maps/api/staticmap?center="+$scope.latitude + "," + $scope.longitude+"&zoom=15&size=300x150&maptype=roadmap&key=AIzaSyCmU7xiNr4nqA03zEnZxutHc-a9p5epvaE");
+        console.log('$scope.googleUrl: ' + $scope.googleUrl);
+    }, function (error) {
+        $scope.latitude  = null;
+        $scope.longitude = null;
+    });
+    $scope.unprocessedSms = $localStorage.unprocessedSms ? JSON.stringify($localStorage.unprocessedSms) : "None";
 }]);

@@ -4,27 +4,39 @@
  * and open the template in the editor.
  */
 
-// File: reports/unprocessedSMS/controllers.js
+// js/reports/controllers.js
 
-controllers.controller('UTextsCtrl', ['$scope'
+/*
+ * Generic controller List controller to control the display of a 
+ * list of items obtained from the backend
+ */
+
+controllers.controller('ListCtrl', ['$scope'
                                     , '$http'
                                     , 'GenericRestServices'
                                     , 'AUTH_EVENTS'
                                     , 'REST_PATH'
+                                    , '$stateParams'
                                     , function($scope
                                                 , $http
                                                 , GenericRestServices
                                                 , AUTH_EVENTS
                                                 , REST_PATH
+                                                , $stateParams
                                                         ) {
-    var initialLink = REST_PATH.host + REST_PATH.unprocessedText;
+    var initialLink = REST_PATH.host + $stateParams.urlPath;
     var refreshData = function (link) {
         var entry = GenericRestServices.genericResource(link).get(function () {
-            $scope.uTextList = entry.results;
+            if (link === $scope.next){
+                $scope.itemList = $scope.itemList.concat(entry.results);
+                $scope.$broadcast('scroll.infiniteScrollComplete');
+            } else {
+                $scope.itemList = entry.results;
+            }
             $scope.next = entry.next;
             $scope.previous = entry.previous;
             console.log('entry: ' + entry);
-            console.log('$scope.uTextList : ' + $scope.uTextList);
+            console.log('$scope.itemList : ' + $scope.itemList);
         }, function (error) {
             console.log("error : " + JSON.stringify(error));
         });
@@ -45,6 +57,16 @@ controllers.controller('UTextsCtrl', ['$scope'
             refreshData($scope.next);
         }
     };
+    
+    $scope.loadMoreItems = function() {
+        if ($scope.next) {
+            refreshData($scope.next);
+        }
+    };
+
+    $scope.$on('$stateChangeSuccess', function() {
+        $scope.loadMoreItems();
+    });
     
     refreshData(initialLink);
     

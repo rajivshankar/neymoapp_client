@@ -16,6 +16,7 @@ var mainApp = angular.module('moneyProApp', ['ionic'
                                             , 'ngAnimate'
                                             , 'restangular'
                                             , 'ngResource'
+                                            , 'ngSanitize'
                                         ]);
 
 mainApp.run(['Restangular'
@@ -53,7 +54,10 @@ mainApp.run(['Restangular'
     }
 }]);
 
-mainApp.config(function($stateProvider, $urlRouterProvider) {
+mainApp.config(function($stateProvider
+                        , $urlRouterProvider
+                        , $sceDelegateProvider
+                                ) {
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
@@ -85,22 +89,24 @@ mainApp.config(function($stateProvider, $urlRouterProvider) {
 
     .state('tab.utexts', {
         url: '/utexts',
+        params: {urlPath: 'unprocessed_text_data/'},
         views: {
             'tab-utexts': {
                 templateUrl: 'templates/tab-utexts.html',
-                controller: 'UTextsCtrl',
-                controllerAs: 'uTextsCtrl'
+                controller: 'ListCtrl',
+                controllerAs: 'listCtrl',
             }
         }
     })
 
     .state('tab.smsList', {
         url: '/sms-list',
+        params: {urlPath: 'text-data/'},
         views: {
             'tab-sms-list': {
                 templateUrl: 'templates/tab-sms.html',
-                controller: 'SMSListCtrl',
-                controllerAs: 'smsListCtrl'
+                controller: 'ListCtrl',
+                controllerAs: 'listCtrl',
           }
         }
     })
@@ -129,6 +135,9 @@ mainApp.config(function($stateProvider, $urlRouterProvider) {
 
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/tab/dash');
-
+    $sceDelegateProvider.resourceUrlWhitelist([
+            'self',
+            'https://maps.googleapis.com/**'
+            ]);
 });
 

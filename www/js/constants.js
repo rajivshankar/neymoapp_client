@@ -11,11 +11,18 @@ mainApp.constant('AUTH_EVENTS', {
     loginFailed: 'event:auth-login-failed',
     logoutComplete: 'event:auth-logout-complete',
     refreshData: 'event:refresh-all-data',
-    onSmsArrive: 'onSMSArrive'
+    onSmsArrive: 'onSMSArrive',
 });
 
 mainApp.constant('REST_PATH', {
 //    host: 'http://localhost:8000/restful/',
     host: 'https://moneybee-20151115.herokuapp.com/restful/',
-    device: 'device/'
+    device: 'device/',
+    unprocessedText: 'unprocessed_text_data/',
+    smsList: 'text-data/'
+});
+
+mainApp.constant('TEST_CONST', {
+    number: '+447526019132',
+    coordPrecision: 8
 });

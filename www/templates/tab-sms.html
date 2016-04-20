@@ -1,29 +1,17 @@
-<ion-view view-title="SMS To Be Uploaded">
-    <ion-content class="padding">
-        <p><strong>Last Upload Date: </strong></p><p><span ng-bind="lastSmsUploadDate"></span></p>
-        <ion-list>
-            <div ng-repeat="sms in smsFilteredList" >
-                <div  class="card animated bounceIn" ng-show="checkDate(sms)">
-                    <!--
-                    <div class="item item-assertive item-divider" ng-show="isNumber(sms.address)">
-                        <strong><span ng-bind="sms.address"></span></strong>
-                        <span style="float:right;"><i>Personal - Ignore </i><i class="icon ion-close-circled"></i></span>
-                    </div>
-                    <div class="item item-positive item-divider" ng-hide="isNumber(sms.address)">
-                        <strong><span ng-bind="sms.address"></span></strong>
-                        <span style="float:right;"><i>Service text </i><i class="icon ion-checkmark-circled"></i></span>
-                    </div>
-                    <div class="item item-text-wrap">
-                        <p><strong>ID: <span ng-bind="sms._id"></span></strong></p>
-                        <p><strong>Date: </strong><span ng-bind="dateStr(sms.date)"></span></p>
-                        <p><strong>Date Sent: </strong><span ng-bind="dateStr(sms.date_sent)"></span></p>
-                    </div>
-                    -->
-                    <div class="item item-text-wrap">
-                        <strong><span ng-bind="sms.address"></span>: </strong>"<span ng-bind="sms.body"></span>"
-                    </div>
-                </div>
-            </div>
-        </ion-list>
+<ion-view view-title="Uploaded Texts">
+    <ion-content>
+        <div class="card animated bounceIn" ng-repeat="text in itemList">
+            <div class="item item-text-wrap" class="padding">
+                <strong><span ng-bind="text.sender"></span>: </strong>
+                <span ng-bind="text.text_message"></span>
+            </div>  
+        </div>
+        <ion-infinite-scroll
+            ng-if="next"
+            icon="ion-loading-c"
+            on-infinite="loadMoreItems()"
+            distance="1%">
+        </ion-infinite-scroll>
+        <hr ng-hide="next">
     </ion-content>
 </ion-view>

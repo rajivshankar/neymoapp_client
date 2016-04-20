@@ -108,12 +108,11 @@ controllers.controller('AppCtrl', ['$scope'
         }
     });
 //    delete $localStorage.lastSmsUploadDate;
-    console.log("smsFilteredList null (service): " + JSON.stringify(SmsListService.processSms()));
+    console.log("smsFilteredList null (service): " + JSON.stringify(SmsListService.processDeviceSms()));
 
     smsArriveListener = function (e) {
-        console.log("Fired New Sms function");
+        console.log("Process old SMS on new arrival: " + JSON.stringify(SmsListService.processDeviceSms()));
         console.log("new SMS arrival: " + JSON.stringify(SmsListService.processNewSms(e)));
-        console.log("Process old SMS on new arrival: " + JSON.stringify(SmsListService.processSms()));
     };
 
     $ionicPlatform.on(AUTH_EVENTS.onSmsArrive, smsArriveListener);

@@ -32,7 +32,7 @@ services.factory('TextDataService', ['$resource'
                                     , function ($resource
                                                 , REST_PATH
                                                         ) {
-    console.log(REST_PATH.host + 'text-data/');
+//    console.log(REST_PATH.host + 'text-data/');
     return $resource(REST_PATH.host + 'text-data/');
 }]);
 
@@ -41,7 +41,7 @@ services.factory('BulkTextService', ['$resource'
                                     , function ($resource
                                                 , REST_PATH
                                                         ) {
-    console.log(REST_PATH.host + 'bulk/bulk_text/');
+//    console.log(REST_PATH.host + 'bulk/bulk_text/');
     return $resource(REST_PATH.host + 'bulk/bulk_text/');
 }]);
 
@@ -51,4 +51,15 @@ services.factory('UserInfoService', ['$resource'
                                             , REST_PATH
                                                     ) {
     return $resource(REST_PATH.host + 'users/');
+}]);
+
+services.factory('GenericRestServices', ['$resource'
+                                        , function ($resource
+                                                    ) {
+    service = {
+        genericResource : function (link) {
+            return $resource(link);
+        }
+    };
+    return service;
 }]);

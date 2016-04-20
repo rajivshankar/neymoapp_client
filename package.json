@@ -24,7 +24,8 @@
     "ionic-plugin-keyboard",
     "cordova-plugin-sim",
     "cordova-plugin-sms",
-    "plugin"
+    "plugin",
+    "cordova-plugin-geolocation"
   ],
   "cordovaPlatforms": [
     "android"

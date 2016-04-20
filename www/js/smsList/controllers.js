@@ -6,59 +6,53 @@
 // File: smsList/controllers.js
 
 controllers.controller('SMSListCtrl', ['$scope'
-                                    , '$localStorage'
+                                    , '$http'
+                                    , 'TextDataService'
+                                    , 'GenericRestServices'
+                                    , 'AUTH_EVENTS'
+                                    , 'REST_PATH'
                                     , function($scope
-                                               , $localStorage
-                                               ) {
-    $scope.lastSmsUploadDate = new Date("April 01, 2016 11:00:00");
-    var sms = {};
-    $scope.smsFilteredList = [];
-  
-    $scope.isNumber = function (n) {
-        $scope.personalText = false;
-        if (n.length > 9) {
-            $scope.lastTen = n.slice(-10);
-            function isNumeric(n) {
-                return !isNaN(parseFloat(n)) && isFinite(n);
-            }
-            //$scope.lastTen = data.address.slice(-10);
-            if (isNumeric($scope.lastTen)) {
-                $scope.personalText = true;
-            }
-        }
-        return $scope.personalText;
-    };
-    
-    // dateStr takes in a date in milliseconds
-    // and returns the javascript dates in human readable formats
-    $scope.dateStr = function(n) {
-        var d = new Date(Number(n));
-        return d.toString();
-    };
-    
-    // checkDate takes the sms record as parameters
-    // and returns whether the date falls later than last upload date
-    // and returns true if later
-    $scope.checkDate = function(sms) {
-        tempDate = new Date(sms.date)
-        if (tempDate.getTime() > ($scope.lastSmsUploadDate ? $scope.lastSmsUploadDate.getTime() : null)) {
-            return true;
-        } else {
-            return false;
-        }
-    };
-    
-    if (SMS) {
-        SMS.listSMS({}, function (data) {
-            $scope.smsList = data;
-//            console.log("smsList :" + JSON.stringify($scope.smsList));
-            for (i = 0; i < $scope.smsList.length; i+=1) {
-                sms = $scope.smsList[i];
-                if ($scope.checkDate(sms) && !$scope.isNumber(sms.address)) {
-                    $scope.smsFilteredList.push(sms);
-                }
-//                console.log("smsFilteredList: " + JSON.stringify($scope.smsFilteredList));
-            }
+                                                , $http
+                                                , TextDataService
+                                                , GenericRestServices
+                                                , AUTH_EVENTS
+                                                , REST_PATH
+                                                        ) {
+    var initialLink = REST_PATH.host + REST_PATH.smsList;
+    var refreshData = function (link) {
+        var entry = GenericRestServices.genericResource(link).get(function () {
+            $scope.uTextList = entry.results;
+            $scope.next = entry.next;
+            $scope.previous = entry.previous;
+            console.log(entry);
+            console.log($scope.uTextList);
+        }, function (error) {
+            console.log("error : " + JSON.stringify(error));
         });
-    }
+    };
+    
+    $scope.prevButtonClick = function () {
+        console.log('prev button click');
+        if ($scope.previous) {
+            console.log("Previous: " + $scope.previous)
+            refreshData($scope.previous);
+        }
+    };
+    
+    $scope.nextButtonClick = function () {
+        console.log('next button click');
+        if ($scope.next) {
+            console.log("Next: " + $scope.next)
+            refreshData($scope.next);
+        }
+    };
+    
+    refreshData(initialLink);
+    
+    refreshDataCall = function () {
+        refreshData(initialLink);
+    };
+    
+    $scope.$on(AUTH_EVENTS.refreshData, refreshDataCall);
+    
 }]);
