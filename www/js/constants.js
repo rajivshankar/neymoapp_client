@@ -24,5 +24,6 @@ mainApp.constant('REST_PATH', {
 
 mainApp.constant('TEST_CONST', {
     number: '+447526019132',
-    coordPrecision: 8
+    coordPrecision: 8,
+    timeMarginSec: 120 
 });

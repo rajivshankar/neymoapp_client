@@ -15,6 +15,7 @@ controllers.controller('DebugInfoCtrl', ['$scope'
                                         , '$sce'
                                         , '$http'
                                         , '$ionicLoading'
+                                        , 'AUTH_EVENTS'
                                         , function ($scope
                                                     , $ionicPlatform
                                                     , $localStorage
@@ -25,6 +26,7 @@ controllers.controller('DebugInfoCtrl', ['$scope'
                                                     , $sce
                                                     , $http
                                                     , $ionicLoading
+                                                    , AUTH_EVENTS
                                         ) {
     var posOptions;
     var d = new Date(Number(1459592334094));
@@ -85,5 +87,19 @@ controllers.controller('DebugInfoCtrl', ['$scope'
         $scope.latitude  = null;
         $scope.longitude = null;
     });
-    $scope.unprocessedSms = $localStorage.unprocessedSms ? JSON.stringify($localStorage.unprocessedSms) : "None";
+    
+    viewSmsList = function () {
+        $scope.unprocessedSms = $localStorage.unprocessedSms ? JSON.stringify($localStorage.unprocessedSms) : "None";
+    };
+    
+    viewSmsList();
+    
+    $scope.$on(AUTH_EVENTS.refreshData, viewSmsList);
+    
+    m1 = Date.now();
+    d1 = new Date(m1);
+    d2 = new Date(m1 + 1000);
+    console.log("d1: " + d1);
+    console.log("d2: " + d2);
+    
 }]);
