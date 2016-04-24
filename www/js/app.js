@@ -19,17 +19,11 @@ var mainApp = angular.module('moneyProApp', ['ionic'
                                             , 'ngSanitize'
                                         ]);
 
-mainApp.run(['Restangular'
-                , '$rootScope'
-                , '$localStorage'
+mainApp.run(['$localStorage'
                 , '$ionicPlatform'
-                , '$cordovaDevice'
                 , '$http'
-                , function(Restangular
-                            , $rootScope
-                            , $localStorage
+                , function($localStorage
                             , $ionicPlatform
-                            , $cordovaDevice
                             , $http
                             ) {
 
@@ -89,7 +83,10 @@ mainApp.config(function($stateProvider
 
     .state('tab.utexts', {
         url: '/utexts',
-        params: {urlPath: 'unprocessed_text_data/'},
+        params: {
+            urlPath: 'unprocessed_text_data/'
+            , listKey: 'unprocessTextList'
+        },
         views: {
             'tab-utexts': {
                 templateUrl: 'templates/tab-utexts.html',
@@ -101,7 +98,10 @@ mainApp.config(function($stateProvider
 
     .state('tab.smsList', {
         url: '/sms-list',
-        params: {urlPath: 'text-data/'},
+        params: {
+            urlPath: 'text-data/'
+            , listKey: 'uploadedSmsList'
+        },
         views: {
             'tab-sms-list': {
                 templateUrl: 'templates/tab-sms.html',

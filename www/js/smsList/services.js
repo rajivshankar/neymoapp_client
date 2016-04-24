@@ -12,6 +12,7 @@ services.factory('SmsListService', ['$localStorage'
                                     , '$http'
                                     , 'AUTH_EVENTS'
                                     , 'TEST_CONST'
+                                    , 'REST_PATH'
                                     , 'DeviceInfoService'                                    
                                     , function($localStorage
                                                 , $q
@@ -20,6 +21,7 @@ services.factory('SmsListService', ['$localStorage'
                                                 , $http
                                                 , AUTH_EVENTS
                                                 , TEST_CONST
+                                                , REST_PATH
                                                 , DeviceInfoService
                                                ) {
     var service = {};
@@ -82,7 +84,10 @@ services.factory('SmsListService', ['$localStorage'
         smsRestRec.location_longitude = sms.longitude || null;
 
         smsRestRec = JSON.parse(JSON.stringify(smsRestRec));
-        $http.post('https://moneybee-20151115.herokuapp.com/restful/text-data.json'
+        console.log("Just before posting " + JSON.stringify(smsRestRec) +
+                    " to " +
+                    REST_PATH.host + REST_PATH.textInput);
+        $http.post(REST_PATH.host + REST_PATH.textInput
                     , smsRestRec).then(function (result) {
             console.log("Success in single writing texts: " + sms.body + ' ' + JSON.stringify(smsRestRec));
             sms.processedFlag = 'Y';
@@ -193,16 +198,19 @@ services.factory('SmsListService', ['$localStorage'
             if (smsData) {
                 console.log("Inside new sms to process " + smsData.data.body);
             }
-            DeviceInfoService.geoLocation()
-            .then(readSms)
-            .then(processSmsList)
-            .then( function () {
+            cleanupResources = function () {
                 console.log("After processing SMS List $localStorage.lastSmsUploadDate: " + $localStorage.lastSmsUploadDate);
                 if (smsData) {
                     console.log("After processing News SMS " + smsData.data.body);
                     $rootScope.$broadcast(AUTH_EVENTS.refreshData);
                 }
-            });
+            };
+            
+            //Chain the following pomises to execute sequentially
+            DeviceInfoService.geoLocation()
+            .then(readSms)
+            .then(processSmsList)
+            .finally(cleanupResources);
             return "Processing SMS...";
         },
         cleanProcessedSms: function () {

@@ -7,15 +7,13 @@
 // File: handshake/services.js
 
 services.factory('HandshakeService', ['$http'
-                                , '$rootScope'
                                 , '$localStorage'
-                                , 'Restangular'
-                                , 'AUTH_EVENTS'
+                                , 'REST_PATH'
+                                , '$q'
                                 , function ($http
-                                            , $rootScope
                                             , $localStorage
-                                            , Restangular
-                                            , AUTH_EVENTS
+                                            , REST_PATH
+                                            , $q
                                             ) {
     var service = {
         register: function(deviceRec) {
@@ -29,28 +27,32 @@ services.factory('HandshakeService', ['$http'
              * 
              */
             var authTokenValue = '';
-            $http.post('https://moneybee-20151115.herokuapp.com/restful/device.json'
-//            $http.post('http://localhost:8000/restful/device/'
-                        , deviceRec, { ignoreAuthModule: true })
-            .then(function(response){
+            var deferred = $q.defer();
+            if (deviceRec) {
+                console.log("Just before posting " + JSON.stringify(deviceRec) + " to " + REST_PATH.host + REST_PATH.device);
+                $http.post(REST_PATH.host + REST_PATH.device, deviceRec)
+                .then(function(response){
                     console.log("Successful $http. Auth Token: " + response.data.auth_token);
-                    $localStorage.myErr = "Auth Token: " + response.data.auth_token;
-                    $localStorage.userToken = response.data.auth_token;
-                    $localStorage.userID = response.data.user_id;
-                    $localStorage.devicePK = response.data.id;
-                    
-                    $rootScope.$broadcast(AUTH_EVENTS.loginConfirmed);
-
-                    authTokenValue = "Token " + $localStorage.userToken;
-                    Restangular.setDefaultHeaders({Authorization: authTokenValue});
-//                    $http.defaults.headers.common.Authorization = authTokenValue;
+//                    $localStorage.deviceRecStr = JSON.stringify(deviceRec);
+//                    $localStorage.userToken = response.data.auth_token;
+//                    $localStorage.userID = response.data.user_id;
+//                    $localStorage.devicePK = response.data.id;
+//
+//                    if ($localStorage.userToken) {
+//                        // set default header "token"
+//                        authTokenValue = "Token " + $localStorage.userToken;
+//                        $http.defaults.headers.common.Authorization = authTokenValue;
+//                    }
+                    deferred.resolve(response.data.auth_token);
                 }, function(error){
                     $localStorage.myErr = "Error for $http:" + error.statusText + deviceRec;
                     console.log("Error for $http: " + error.statusText);
-                    $rootScope.$broadcast(AUTH_EVENTS.loginFailed);
-                }
-            );
-            return authTokenValue;
+                    deferred.reject(error.statusText);
+                });
+            } else {
+                deferred.reject("Error in DeviceRec (Empty)");
+            }
+            return deferred.promise;
         }
     };
     return service;

@@ -6,23 +6,27 @@
 // File: dashboard/controllers.js
 
 controllers.controller('DashCtrl', ['$scope'
-                                    , '$http'
-                                    , 'Accounts'
+                                    , 'AccountInfoService'
                                     , '$localStorage'
                                     , '$sessionStorage'
                                     , 'AUTH_EVENTS'
                                     , function($scope
-                                                , $http
-                                                , Accounts
+                                                , AccountInfoService
                                                 , $localStorage
                                                 , $sessionStorage
                                                 , AUTH_EVENTS
                                                ) {
     var refreshData = function () {
         console.log('Refreshing Dashboard Data');
-        Accounts.all().then(function(resp){
-            $scope.accountList = resp;
-            });
+        console.log("IsOnline is: " + $sessionStorage.isOnline);
+        var accountEntry = AccountInfoService.get(function () {
+            console.log("Account read Success: " + JSON.stringify(accountEntry));
+            $scope.accountList = accountEntry.results;
+            $localStorage.lists['accountList'] = $scope.accountList;
+        }, function (err) {
+            console.log("Failed Account Read: " + JSON.stringify(err));
+            $scope.accountList = $localStorage.lists['accountList'];
+        });
     }
     
     refreshData();

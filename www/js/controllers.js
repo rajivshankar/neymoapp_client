@@ -2,103 +2,45 @@
 var controllers = angular.module('moneyProApp.controllers', []);
 
 controllers.controller('AppCtrl', ['$scope'
+                                    , '$rootScope'
                                     , '$ionicPlatform'
                                     , '$localStorage'
                                     , '$sessionStorage'
-                                    , '$cordovaDevice'
-                                    , '$http'
-                                    , 'Restangular'
-                                    , 'AppUtils'
+                                    , '$cordovaNetwork'
+                                    , '$ionicPopup'
+                                    , 'HandshakeService'
                                     , 'SmsListService'
                                     , 'AUTH_EVENTS'
+                                    , 'DeviceInfoService'
                                     , function ($scope
+                                                , $rootScope
                                                 , $ionicPlatform
                                                 , $localStorage
                                                 , $sessionStorage
-                                                , $cordovaDevice
-                                                , $http
-                                                , Restangular
-                                                , AppUtils
+                                                , $cordovaNetwork
+                                                , $ionicPopup
+                                                , HandshakeService
                                                 , SmsListService
                                                 , AUTH_EVENTS
+                                                , DeviceInfoService
                                     ) {
     /*
      * Define the Login Modal
      * clean up the login modal once the destroy event occurs
      */
-    var deviceRecStr = '{';
-    var deviceRec = {};
-    var authTokenValue = '';
-    var baseDevice = Restangular.all();
-
-    delete $localStorage.device;
-    delete $localStorage.deviceRecStr;
-    delete $localStorage.uuid;
-    delete $localStorage.myErr;
-    delete $localStorage.error;
-    
     $scope.debugMode = $sessionStorage.debugMode;
 
+    if (!$localStorage.userToken) {
+        DeviceInfoService.deviceInfo ()
+        .then (HandshakeService.register)
+        .then (function (authTokenValue) {
+            console.log("Auth Token Returned: " + authTokenValue);
+        })
+        .catch (function (err) {
+            console.log("Error in device registration: " + err);
+        });
+    }
     $ionicPlatform.ready(function() {
-        if (!$localStorage.userToken) {
-            if ($cordovaDevice) {
-                deviceRecStr += '"uuid": "' + $cordovaDevice.getUUID() + '"';
-                deviceRecStr += ', "model_name": "' + $cordovaDevice.getModel() + '"';
-                deviceRecStr += ', "os_platform": "' + $cordovaDevice.getPlatform() + '"';
-                deviceRecStr += ', "version": "' + $cordovaDevice.getVersion() + '"';
-            }
-            if (window.plugins.sim) {
-                window.plugins.sim.getSimInfo(function(result) {
-                deviceRecStr += ', "country_code": "' + result.countryCode + '"';
-                deviceRecStr += ', "mcc": ' + ((result.mcc && AppUtils.isNumber(result.mcc))? result.mcc: 'null');
-                deviceRecStr += ', "mnc": ' + ((result.mnc && AppUtils.isNumber(result.mnc))? result.mnc: 'null');
-                deviceRecStr += ', "phone_number": ' + ((result.phoneNumber && AppUtils.isNumber(result.phoneNumber))? result.phoneNumber.slice(-10) : 'null');
-                deviceRecStr += ', "device_id": "' + result.deviceId + '"';
-                deviceRecStr += '}';
-
-                $localStorage.deviceRecStr = deviceRecStr;//                deviceRecStr += $localStorage.device;
-                deviceRec = JSON.parse(deviceRecStr)
-                $localStorage.deviceRec = JSON.stringify(deviceRec);//                deviceRecStr += $localStorage.device;
-                $localStorage.uuid = deviceRec.uuid;
-                $localStorage.device = deviceRec.device_id;
-//                baseDevice.post("device", deviceRec).then(function(response){
-//                   console.log("POST successa");
-//                   $localStorage.error = response.data.auth_token;
-//                   $localStorage.error = "Success device setup";
-//                   
-//                   //$localStorage.userToken = auth_token;
-//                }, function(error){
-//                   $localStorage.error = error.statusText;
-//                    console.log("There was an error while getting token" + error.statusText);
-//                });
-//                console.log(baseDevice);
-                
-                $http.post('https://moneybee-20151115.herokuapp.com/restful/device.json'
-                // $http.post('http://localhost:8000/restful/device/'
-                            , deviceRec).then(function(response){
-                    console.log("Successful $http. Auth Token: " + response.data.auth_token);
-                    $localStorage.myErr = "Auth Token: " + response.data.auth_token;
-                    $localStorage.userToken = response.data.auth_token;
-                    $localStorage.userID = response.data.user_id;
-                    $localStorage.devicePK = response.data.id;
-
-                    if ($localStorage.userToken) {
-                        // set default header "token"
-                        authTokenValue = "Token " + $localStorage.userToken;
-                        $http.defaults.headers.common.Authorization = authTokenValue;
-                        Restangular.setDefaultHeaders({Authorization: authTokenValue});
-                    }
-                }, function(error){
-                    $localStorage.myErr = "Error for $http:" + error.statusText + deviceRec;
-                    console.log("Error for $http: " + error.statusText);
-                });
-
-                }, function(errResult){
-                        console.log(errResult);
-                        $localStorage.error = "Sim read err:" + errResult.statusText;
-                });
-            }
-        }
         if(SMS) {
             SMS.startWatch(function(){
         		console.log('watching', 'watching started');
@@ -106,17 +48,52 @@ controllers.controller('AppCtrl', ['$scope'
         		console.log('failed to start watching');
         	});
         }
+
+        // Check internet connectivity and display offline or online status
+        $sessionStorage.isOnline = $cordovaNetwork.isOnline();
+        console.log("Online Status: " + $sessionStorage.isOnline)
+
+        // listen for Online event
+        $rootScope.$on('$cordovaNetwork:online', function(event, networkState){
+            var onlineState = networkState;
+            $sessionStorage.isOnline = $cordovaNetwork.isOnline();
+            smsArriveListener({data: {body: "Refresh Connected"}});
+            console.log("Online Status: " + $sessionStorage.isOnline)
+//            $rootScope.$broadcast(AUTH_EVENTS.refreshData);
+        });
+
+        // listen for Offline event
+        showOfflineAlert = function() {
+            var alertPopup = $ionicPopup.alert({
+                                title: "Neymo",
+                                template: "Missing Internet Connection. Operating Offline!"
+            });
+
+            alertPopup.then(function (res) {
+                console.log('Offline Alert Confirmed');
+            });
+        };
+        $rootScope.$on('$cordovaNetwork:offline', function(event, networkState){
+            var offlineState = networkState;
+            console.log("Online Status: " + $sessionStorage.isOnline);
+            $sessionStorage.isOnline = $cordovaNetwork.isOnline();
+            showOfflineAlert();
+        });
     });
 //    delete $localStorage.lastSmsUploadDate;
-    SmsListService.cleanProcessedSms();
-    console.log("Process SMS on bootstrap: " + JSON.stringify(SmsListService.processSms()));
+    processAllSms = function () {
+        SmsListService.cleanProcessedSms();
+        console.log("Process All SMS: " + JSON.stringify(SmsListService.processSms()));
+    };
+    
+    processAllSms();
 
     smsArriveListener = function (e) {
-            SmsListService.cleanProcessedSms();
+        SmsListService.cleanProcessedSms();
         console.log("Process SMS on new arrival: " + JSON.stringify(SmsListService.processSms(e)));
     };
 
     $ionicPlatform.on(AUTH_EVENTS.onSmsArrive, smsArriveListener);
-
     
+    $localStorage.lists = $localStorage.lists || {};
 }]);

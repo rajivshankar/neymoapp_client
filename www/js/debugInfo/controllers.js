@@ -6,43 +6,31 @@
 
 // debugInfo/controllers.js
 controllers.controller('DebugInfoCtrl', ['$scope'
-                                        , '$ionicPlatform'
                                         , '$localStorage'
                                         , 'AppUtils'
                                         , 'REST_PATH'
-                                        , '$cordovaGeolocation'
                                         , 'DeviceInfoService'
                                         , '$sce'
-                                        , '$http'
-                                        , '$ionicLoading'
                                         , 'AUTH_EVENTS'
                                         , function ($scope
-                                                    , $ionicPlatform
                                                     , $localStorage
                                                     , AppUtils
                                                     , REST_PATH
-                                                    , $cordovaGeolocation
                                                     , DeviceInfoService
                                                     , $sce
-                                                    , $http
-                                                    , $ionicLoading
                                                     , AUTH_EVENTS
                                         ) {
-    var posOptions;
     var d = new Date(Number(1459592334094));
-    var tmpUrl = "";
     $scope.deviceRecStr =  $localStorage.deviceRecStr;
-    $scope.deviceRec =  $localStorage.deviceRec;
     $scope.device_id = $localStorage.device;
     $scope.uuid = $localStorage.uuid;
-    $scope.myErr = $localStorage.myErr;
     
     console.log("Before DeviceService call");
     DeviceInfoService.deviceInfo ()
     .then (function (deviceRec) {
         console.log("DeviceRec: " + JSON.stringify(deviceRec));
     }, function (errMessage) {
-        console.log("Device Rec Error: " + Message);
+        console.log("Device Rec Error: " + errMessage);
     });
 
     if ($localStorage.userToken) {
@@ -89,6 +77,7 @@ controllers.controller('DebugInfoCtrl', ['$scope'
     });
     
     viewSmsList = function () {
+        console.log("Debug unprocessed SMS refresh...")
         $scope.unprocessedSms = $localStorage.unprocessedSms ? JSON.stringify($localStorage.unprocessedSms) : "None";
     };
     

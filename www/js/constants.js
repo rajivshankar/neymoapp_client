@@ -17,9 +17,10 @@ mainApp.constant('AUTH_EVENTS', {
 mainApp.constant('REST_PATH', {
 //    host: 'http://localhost:8000/restful/',
     host: 'https://moneybee-20151115.herokuapp.com/restful/',
-    device: 'device/',
+    device: 'device.json',
     unprocessedText: 'unprocessed_text_data/',
-    smsList: 'text-data/'
+    smsList: 'text-data/',
+    textInput: 'text-data.json'
 });
 
 mainApp.constant('TEST_CONST', {

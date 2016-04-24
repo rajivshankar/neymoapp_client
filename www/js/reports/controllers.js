@@ -12,19 +12,21 @@
  */
 
 controllers.controller('ListCtrl', ['$scope'
-                                    , '$http'
+                                    , '$localStorage'
                                     , 'GenericRestServices'
                                     , 'AUTH_EVENTS'
                                     , 'REST_PATH'
                                     , '$stateParams'
                                     , function($scope
-                                                , $http
+                                                , $localStorage
                                                 , GenericRestServices
                                                 , AUTH_EVENTS
                                                 , REST_PATH
                                                 , $stateParams
                                                         ) {
     var initialLink = REST_PATH.host + $stateParams.urlPath;
+    // for offline work
+    var listKey = $stateParams.listKey
     var refreshData = function (link) {
         var entry = GenericRestServices.genericResource(link).get(function () {
             if (link === $scope.next){
@@ -32,6 +34,7 @@ controllers.controller('ListCtrl', ['$scope'
                 $scope.$broadcast('scroll.infiniteScrollComplete');
             } else {
                 $scope.itemList = entry.results;
+                $localStorage.lists[listKey] = $scope.itemList;
             }
             $scope.next = entry.next;
             $scope.previous = entry.previous;
@@ -39,6 +42,7 @@ controllers.controller('ListCtrl', ['$scope'
             console.log('$scope.itemList : ' + $scope.itemList);
         }, function (error) {
             console.log("error : " + JSON.stringify(error));
+            $scope.itemList = $localStorage.lists[listKey];
         });
     };
     
@@ -71,6 +75,7 @@ controllers.controller('ListCtrl', ['$scope'
     refreshData(initialLink);
     
     refreshDataCall = function () {
+        console.log("Refreshing data call to " + initialLink)
         refreshData(initialLink);
     };
     

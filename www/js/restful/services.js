@@ -53,6 +53,14 @@ services.factory('UserInfoService', ['$resource'
     return $resource(REST_PATH.host + 'users/');
 }]);
 
+services.factory('AccountInfoService', ['$resource'
+                                , 'REST_PATH'
+                                , function ($resource
+                                            , REST_PATH
+                                                    ) {
+    return $resource(REST_PATH.host + 'accounts/');
+}]);
+
 services.factory('GenericRestServices', ['$resource'
                                         , function ($resource
                                                     ) {

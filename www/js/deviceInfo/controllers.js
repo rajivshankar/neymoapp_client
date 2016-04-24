@@ -50,7 +50,7 @@ controllers.controller('DevInfoCtrl', ['$scope'
    });
 
     $scope.clearUserToken = function() {
-        delete $localStorage.userToken;
+//        delete $localStorage.userToken;
         console.log("userToken deleted... " + $localStorage);
     };
     

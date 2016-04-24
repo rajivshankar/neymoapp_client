@@ -25,7 +25,8 @@
     "cordova-plugin-sim",
     "cordova-plugin-sms",
     "plugin",
-    "cordova-plugin-geolocation"
+    "cordova-plugin-geolocation",
+    "cordova-plugin-network-information"
   ],
   "cordovaPlatforms": [
     "android"

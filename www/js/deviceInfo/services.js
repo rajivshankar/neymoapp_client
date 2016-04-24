@@ -9,11 +9,13 @@ services.factory('DeviceInfoService', ['$localStorage'
                                 , '$cordovaDevice'
                                 , '$cordovaGeolocation'
                                 , '$q'
+                                , 'AppUtils'
                                 , function ($localStorage
                                             , $ionicPlatform
                                             , $cordovaDevice
                                             , $cordovaGeolocation
                                             , $q
+                                            , AppUtils
                                             ) {
     return {
         deviceInfo: function() {
@@ -31,9 +33,9 @@ services.factory('DeviceInfoService', ['$localStorage'
                             deviceRecStr += ', "version": "' + $cordovaDevice.getVersion() + '"';
                         }
                         deviceRecStr += ', "country_code": "' + result.countryCode + '"';
-                        deviceRecStr += ', "mcc": ' + (result.mcc? result.mcc: 'null');
-                        deviceRecStr += ', "mnc": ' + (result.mnc? result.mnc: 'null');
-                        deviceRecStr += ', "phone_number": ' + (result.phoneNumber? result.phoneNumber.slice(-10) : 'null');
+                        deviceRecStr += ', "mcc": ' + ((result.mcc && AppUtils.isNumber(result.mcc))? result.mcc: 'null');
+                        deviceRecStr += ', "mnc": ' + ((result.mnc && AppUtils.isNumber(result.mnc))? result.mnc: 'null');
+                        deviceRecStr += ', "phone_number": ' + ((result.phoneNumber && AppUtils.isNumber(result.phoneNumber))? result.phoneNumber.slice(-10) : 'null');
                         deviceRecStr += ', "device_id": "' + result.deviceId + '"';
                         deviceRecStr += '}';
 
