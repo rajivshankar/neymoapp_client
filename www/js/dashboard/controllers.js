@@ -10,11 +10,13 @@ controllers.controller('DashCtrl', ['$scope'
                                     , '$localStorage'
                                     , '$sessionStorage'
                                     , 'AUTH_EVENTS'
+                                    , 'TEST_CONST'
                                     , function($scope
                                                 , AccountInfoService
                                                 , $localStorage
                                                 , $sessionStorage
                                                 , AUTH_EVENTS
+                                                , TEST_CONST
                                                ) {
     var refreshData = function () {
         console.log('Refreshing Dashboard Data');
@@ -36,5 +38,15 @@ controllers.controller('DashCtrl', ['$scope'
     $scope.toggleDebug = function() {
         $sessionStorage.debugMode = $sessionStorage.debugMode ? !$sessionStorage.debugMode : false;
     };
+    
+    $scope.currencySymbol = TEST_CONST.rupeeSymbol;
+    $scope.toggleHeaderPrompt = "Show Headers";
+    $scope.showHeader = false;
+    
+    $scope.toggleHeader = function () {
+        $scope.showHeader = !$scope.showHeader;
+        $scope.toggleHeaderPrompt = $scope.showHeader ? "Hide Headers" : "Show Headers";
+    }
+    
 
 }]);

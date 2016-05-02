@@ -61,6 +61,14 @@ services.factory('AccountInfoService', ['$resource'
     return $resource(REST_PATH.host + 'accounts/');
 }]);
 
+services.factory('ReportsGCService', ['$resource'
+                                , 'REST_PATH'
+                                , function ($resource
+                                            , REST_PATH
+                                                    ) {
+    return $resource(REST_PATH.host + 'reports/');
+}]);
+
 services.factory('GenericRestServices', ['$resource'
                                         , function ($resource
                                                     ) {

@@ -14,9 +14,9 @@ var mainApp = angular.module('moneyProApp', ['ionic'
                                             , 'ngCordova'
                                             , 'ngStorage'
                                             , 'ngAnimate'
-                                            , 'restangular'
                                             , 'ngResource'
                                             , 'ngSanitize'
+                                            , 'googlechart'
                                         ]);
 
 mainApp.run(['$localStorage'
@@ -77,6 +77,17 @@ mainApp.config(function($stateProvider
                 templateUrl: 'templates/tab-dash.html',
                 controller: 'DashCtrl',
                 controllerAs: 'dashCtrl'
+          }
+        }
+    })
+
+    .state('tab.reports', {
+        url: '/reports',
+        views: {
+            'tab-reports': {
+                templateUrl: 'templates/tab-reports.html',
+                controller: 'ReportsCtrl',
+                controllerAs: 'reportsCtrl'
           }
         }
     })

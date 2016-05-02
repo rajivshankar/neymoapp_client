@@ -33,16 +33,16 @@ services.factory('HandshakeService', ['$http'
                 $http.post(REST_PATH.host + REST_PATH.device, deviceRec)
                 .then(function(response){
                     console.log("Successful $http. Auth Token: " + response.data.auth_token);
-//                    $localStorage.deviceRecStr = JSON.stringify(deviceRec);
-//                    $localStorage.userToken = response.data.auth_token;
-//                    $localStorage.userID = response.data.user_id;
-//                    $localStorage.devicePK = response.data.id;
-//
-//                    if ($localStorage.userToken) {
-//                        // set default header "token"
-//                        authTokenValue = "Token " + $localStorage.userToken;
-//                        $http.defaults.headers.common.Authorization = authTokenValue;
-//                    }
+                    $localStorage.deviceRecStr = JSON.stringify(deviceRec);
+                    $localStorage.userToken = response.data.auth_token;
+                    $localStorage.userID = response.data.user_id;
+                    $localStorage.devicePK = response.data.id;
+
+                    if ($localStorage.userToken) {
+                        // set default header "token"
+                        authTokenValue = "Token " + $localStorage.userToken;
+                        $http.defaults.headers.common.Authorization = authTokenValue;
+                    }
                     deferred.resolve(response.data.auth_token);
                 }, function(error){
                     $localStorage.myErr = "Error for $http:" + error.statusText + deviceRec;

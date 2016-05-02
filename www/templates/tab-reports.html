@@ -1,0 +1,24 @@
+<ion-view view-title="Reports">
+    <ion-content on-swipe-down="refreshData()">
+        <!--div class="item item-text-wrap" class="padding"-->
+        <div  class="padding">
+            <p ng-hide="refreshing"><small style="float:right;color: graytext;">Swipe down to refresh reports</small></p>
+            <p ng-show="refreshing" style="float:right;color: graytext;">
+                <small>Refreshing...</small>
+                <ion-spinner icon="spiral" ng-show="refreshing"></ion-spinner>
+            </p>
+            <br/>
+        </div>
+        <div class="padding" ng-hide="chartList"><strong>Oops! No Reports Available</strong></div>
+        <div>
+            <ion-list>
+                <ion-item ng-repeat="chart in chartList" ng-show="chart.data" ng-click="showChart(chart)">
+                    <small><span ng-bind="chart.options.title"></span></small>
+                    <ion-option-button class="button-positive" ng-click="showChart(chart)">
+                        Show
+                    </ion-option-button>
+                </ion-item>
+            </ion-list>
+        </div>
+    </ion-content>
+</ion-view>

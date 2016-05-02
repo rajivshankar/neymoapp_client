@@ -67,7 +67,7 @@ services.factory('SmsListService', ['$localStorage'
     };
     
     processSingleSms = function (sms, idx, smsProcessedList) {
-        var deferred = $q.defer()
+        var deferred = $q.defer();
         var smsRestRec = {};
         var index = idx;
 

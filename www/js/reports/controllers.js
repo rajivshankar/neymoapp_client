@@ -46,22 +46,6 @@ controllers.controller('ListCtrl', ['$scope'
         });
     };
     
-    $scope.prevButtonClick = function () {
-        console.log('prev button click');
-        if ($scope.previous) {
-            console.log("Previous: " + $scope.previous)
-            refreshData($scope.previous);
-        }
-    };
-    
-    $scope.nextButtonClick = function () {
-        console.log('next button click');
-        if ($scope.next) {
-            console.log("Next: " + $scope.next)
-            refreshData($scope.next);
-        }
-    };
-    
     $scope.loadMoreItems = function() {
         if ($scope.next) {
             refreshData($scope.next);
@@ -81,3 +65,66 @@ controllers.controller('ListCtrl', ['$scope'
     
     $scope.$on(AUTH_EVENTS.refreshData, refreshDataCall);
 }]);
+
+
+controllers.controller('ReportsCtrl', ['$scope'
+                                        , '$ionicPopup'
+                                        , 'ReportsGCService'
+                                        , 'AUTH_EVENTS'
+                                        , function($scope
+                                                    , $ionicPopup
+                                                    , ReportsGCService
+                                                    , AUTH_EVENTS
+                                                            ) {
+    /*
+     * This control helps the actual html to loop through all the 
+     * relevant reports for the user and displays them as buttons
+     * 
+     * HAve a json object
+     */
+    
+    var getChartObjects = function () {
+        $scope.chartList = [];
+        $scope.refreshing = true;
+        var chartObjectsSet = ReportsGCService.get(function () {
+            console.log("Reports read Success: ");
+            $scope.chartList = chartObjectsSet.results;
+            console.log("$scope.chartList : " + $scope.chartList);
+            $scope.refreshing = false;
+        }, function (err) {
+            console.log("Failed ReportsRead: " + JSON.stringify(err));
+            $scope.chartList = [];
+            $scope.refreshing = false;
+        });
+    };
+    
+    $scope.chartObject = {};
+    
+    getChartObjects();
+    
+    $scope.refreshData = function () {
+        $scope.chartList = [];
+        getChartObjects();
+    };
+    
+    $scope.$on(AUTH_EVENTS.refreshData, getChartObjects);
+
+    $scope.showChart = function (chartObj) {
+        $scope.chartObject = chartObj;
+        var myPopup = $ionicPopup.show({
+        template: '<div google-chart chart="chartObject" style="height:100%; width:100%;"></div>',
+        scope: $scope,
+        buttons: [
+          {
+            text: 'Close',
+            type: 'button-small',
+            onTap: function(e) {
+                console.log("e: " + JSON.stringify(e));
+                return true;
+            }
+          }
+        ]
+        });
+    }
+}]);
+ 
