@@ -61,12 +61,34 @@ services.factory('AccountInfoService', ['$resource'
     return $resource(REST_PATH.host + 'accounts/');
 }]);
 
+services.factory('BalanceSummaryService', ['$resource'
+                                , 'REST_PATH'
+                                , function ($resource
+                                            , REST_PATH
+                                                    ) {
+    return $resource(REST_PATH.host + 'balance_summary/');
+}]);
+
+services.factory('ReportSQLService', ['$resource'
+                                , 'REST_PATH'
+                                , function ($resource
+                                            , REST_PATH
+                                                    ) {
+    service = {
+        reportResource : function (reportName) {
+            console.log('SQL Service Path: ' + REST_PATH.host + 'reports/' + reportName + '/')
+            return $resource(REST_PATH.host + 'reports/' + reportName + '/');
+        }
+    };
+    return service;
+}]);
+
 services.factory('ReportsGCService', ['$resource'
                                 , 'REST_PATH'
                                 , function ($resource
                                             , REST_PATH
                                                     ) {
-    return $resource(REST_PATH.host + 'reports/');
+    return $resource(REST_PATH.host + 'reports_google_charts/');
 }]);
 
 services.factory('GenericRestServices', ['$resource'
@@ -74,6 +96,7 @@ services.factory('GenericRestServices', ['$resource'
                                                     ) {
     service = {
         genericResource : function (link) {
+            console.log('Generic Resource Path: ' + link)
             return $resource(link);
         }
     };

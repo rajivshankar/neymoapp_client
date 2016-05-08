@@ -12,22 +12,26 @@
  */
 
 controllers.controller('ListCtrl', ['$scope'
+                                    , '$ionicPopup'
                                     , '$localStorage'
                                     , 'GenericRestServices'
                                     , 'AUTH_EVENTS'
                                     , 'REST_PATH'
                                     , '$stateParams'
+                                    , '$state'
                                     , function($scope
+                                                , $ionicPopup
                                                 , $localStorage
                                                 , GenericRestServices
                                                 , AUTH_EVENTS
                                                 , REST_PATH
                                                 , $stateParams
+                                                , $state
                                                         ) {
     var initialLink = REST_PATH.host + $stateParams.urlPath;
     // for offline work
     var listKey = $stateParams.listKey
-    var refreshData = function (link) {
+    $scope.refreshData = function (link) {
         var entry = GenericRestServices.genericResource(link).get(function () {
             if (link === $scope.next){
                 $scope.itemList = $scope.itemList.concat(entry.results);
@@ -38,8 +42,8 @@ controllers.controller('ListCtrl', ['$scope'
             }
             $scope.next = entry.next;
             $scope.previous = entry.previous;
-            console.log('entry: ' + entry);
-            console.log('$scope.itemList : ' + $scope.itemList);
+            console.log('entry: ' + JSON.stringify(entry));
+            console.log('$scope.itemList : ' + JSON.stringify($scope.itemList));
         }, function (error) {
             console.log("error : " + JSON.stringify(error));
             $scope.itemList = $localStorage.lists[listKey];
@@ -48,7 +52,7 @@ controllers.controller('ListCtrl', ['$scope'
     
     $scope.loadMoreItems = function() {
         if ($scope.next) {
-            refreshData($scope.next);
+            $scope.refreshData($scope.next);
         }
     };
 
@@ -56,14 +60,44 @@ controllers.controller('ListCtrl', ['$scope'
         $scope.loadMoreItems();
     });
     
-    refreshData(initialLink);
+    $scope.refreshData(initialLink);
     
-    refreshDataCall = function () {
+    $scope.refreshDataCall = function () {
         console.log("Refreshing data call to " + initialLink)
-        refreshData(initialLink);
+        $scope.refreshData(initialLink);
     };
     
-    $scope.$on(AUTH_EVENTS.refreshData, refreshDataCall);
+    $scope.$on(AUTH_EVENTS.refreshData, $scope.refreshDataCall);
+    
+    $scope.routeState = function (path, params) {
+        console.log("Inside routeState: " + path + params);
+        if (params) {
+            $state.go(path, params);
+        }
+        else {
+            $state.go(path);
+        }
+    };
+    
+    $scope.showPopup = function (msg) {
+        console.log("Inside showPopup: " + msg);
+        if (msg) {
+            var myPopup = $ionicPopup.show({
+                template: msg,
+                title: 'Text Message',
+                buttons: [
+                  {
+                    text: 'Close',
+                    type: 'button-positive',
+                    onTap: function(e) {
+                        console.log("e: " + JSON.stringify(e));
+                        return true;
+                    }
+                  }
+                ]
+            });
+        }
+    };
 }]);
 
 

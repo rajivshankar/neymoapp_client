@@ -80,7 +80,7 @@ mainApp.config(function($stateProvider
           }
         }
     })
-
+    
     .state('tab.reports', {
         url: '/reports',
         views: {
@@ -142,10 +142,54 @@ mainApp.config(function($stateProvider
                 controllerAs: 'debugInfoCtrl'
           }
         }
+    })
+    
+    .state('accounts', {
+        url: '/accounts',
+        params: {
+            urlPath: 'accounts/'
+            , listKey: 'accountList'
+        },
+        templateUrl: 'templates/accountList.html',
+        controller: 'ListCtrl',
+        controllerAs: 'listCtrl'
+    })
+    
+    .state('transactions', {
+        url: '/transactions',
+        params: {
+            urlPath: 'transactions_filter/'
+            , listKey: 'transactionList'
+        },
+        templateUrl: 'templates/transactionList.html',
+        controller: 'ListCtrl',
+        controllerAs: 'listCtrl'
+    })
+
+    .state('vendors', {
+        url: '/vendors',
+        params: {
+            urlPath: 'reports/expense_by_vendor/month'
+            , listKey: 'vendorExpenses'
+        },
+        templateUrl: 'templates/vendorExpenses.html',
+        controller: 'ListCtrl',
+        controllerAs: 'listCtrl'
+    })
+    
+    .state('categories', {
+        url: '/categories',
+        params: {
+            urlPath: 'reports/expense_by_category/month'
+            , listKey: 'categoryExpenses'
+        },
+        templateUrl: 'templates/categoryExpenses.html',
+        controller: 'ListCtrl',
+        controllerAs: 'listCtrl'
     });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/dash');
+    $urlRouterProvider.otherwise('/tab/dash');
     $sceDelegateProvider.resourceUrlWhitelist([
             'self',
             'https://maps.googleapis.com/**'

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<ion-view view-title="Accounts">
+    <ion-content on-swipe-down="refreshDataCall()">
+        <div class="card row-no-padding" 
+             ng-repeat="account in itemList" 
+             ng-click="routeState('transactions', 
+                         {urlPath: 'transactions_filter/?account=' + account.id,
+                            listKey: 'txnByAccount' + account.id})">
+            <div class="item item-text-wrap item-icon-left item-icon-right">
+                <i ng-show="account.type == 'Credit Card'" class="icon ion-card"></i>
+                <i ng-show="account.type == 'Debit Card'" class="icon ion-briefcase"></i>
+                <i ng-show="account.type == 'Cash Card'" class="icon ion-cash"></i>
+                <span ng-bind="account.bank"> </span>
+                <span ng-bind="account.type"> </span>
+                <span ng-bind="account.name"> </span>
+                <i class="icon ion-android-list"></i>
+            </div>  
+            <div class="item item-text-wrap">
+                <div class="padding-top" ng-show="account.balances.available_balance">
+                    <strong>Available Balance: </strong>
+                    <span style="float:right;">
+                        {{account.balances.available_balance | currency: '&#8377; '}}
+                    </span>
+                </div>
+                <div class="padding-top" ng-show="account.balances.outstanding_balance">
+                    <strong>Outstanding Balance: </strong>
+                    <span style="float:right;">
+                        {{account.balances.outstanding_balance | currency: '&#8377; '}}
+                    </span>
+                </div>
+                <div class="padding-top" ng-show="account.balances.credit_limit">
+                    <strong>Credit Limit: </strong>
+                    <span style="float:right;">
+                        {{account.balances.credit_limit | currency: '&#8377; '}}
+                    </span>
+                </div>
+            </div>
+        </div>
+        <ion-infinite-scroll
+            ng-if="next"
+            icon="ion-loading-c"
+            on-infinite="loadMoreItems()"
+            distance="1%">
+        </ion-infinite-scroll>
+    </ion-content>
+</ion-view>

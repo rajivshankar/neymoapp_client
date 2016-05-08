@@ -13,7 +13,13 @@
         <div>
             <ion-list>
                 <ion-item ng-repeat="chart in chartList" ng-show="chart.data" ng-click="showChart(chart)">
-                    <small><span ng-bind="chart.options.title"></span></small>
+                    <small>
+                        <!--<span ng-bind="chart.options.title"></span>-->
+                        <a ng-show="chart.type=='BarChart'" class="button icon-left ion-stats-bars button-clear button-dark"><span ng-bind="chart.options.title"></span></a>
+                        <a ng-show="chart.type=='PieChart'" class="button icon-left ion-pie-graph button-clear button-dark"><span ng-bind="chart.options.title"></span></a>
+                        <a ng-show="chart.type=='ColumnChart'" class="button icon-left ion-stats-bars button-clear button-dark"><span ng-bind="chart.options.title"></span></a>
+                        <a ng-show="chart.type=='LineChart'" class="button icon-left ion-arrow-graph-up-right button-clear button-dark"><span ng-bind="chart.options.title"></span></a>
+                    </small>
                     <ion-option-button class="button-positive" ng-click="showChart(chart)">
                         Show
                     </ion-option-button>

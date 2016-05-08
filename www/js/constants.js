@@ -29,3 +29,14 @@ mainApp.constant('TEST_CONST', {
     timeMarginSec: 120,
     rupeeSymbol: "&#8377;"
 });
+
+mainApp.constant('REPORT_NAMES', {
+    balance_summary: 'balance_summary',
+    expense_summary: 'expense_summary/month',
+    expense_by_account: 'expense_by_account',
+    expense_by_vendor_top: 'expense_by_vendor_top/month',
+    expense_by_vendor: 'expense_by_vendor/month',
+    expense_by_category_top: 'expense_by_category_top/month',
+    expense_by_category: 'expense_by_category/month',
+    expense_top: 'expense_top5/month'    
+});

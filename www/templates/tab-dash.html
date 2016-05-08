@@ -1,61 +1,101 @@
 <ion-view view-title="Dashboard">
-    <ion-content class="padding">
+    <ion-content on-swipe-down="refreshData()">
         <!--
         <button class="button button-block button-energized icon-right ion-stats-bars" ng-click="toggleDebug()">
             ToggleDebug 
         </button>
         -->
-        <ion-list>
-            
-            <div  class="card animated bounceIn" ng-repeat="account in accountList">
-                <div class="item item-text-wrap">
-                    <strong><span ng-bind="account.name"></span></strong> (<span ng-bind="account.bank"></span>)
-                    <div class="row">
-                        <div class="col">
-                            <p ng-show="account.balances.credit_limit">Limit</p>
-                            <p>{{account.balances.credit_limit | currency: '&#8377;'}}</p>
-                        </div>
-                        <div class="col">
-                            <p ng-show="account.balances.outstanding_balance">O/S</p>
-                            <p>{{account.balances.outstanding_balance | currency: '&#8377;'}}</p>
-                        </div>
-                        <div class="col">
-                            <p ng-show="account.balances.available_balance">Available</p>
-                            <p ng-hide="account.balances.available_balance">Balance Unavailable</p>
-                            <p>{{account.balances.available_balance | currency: '&#8377;'}}</p>
-                        </div>
-                    </div>            
-                </div>
-            </div>
-            <div class="row">
-                <div class="col col-55">
-                    <div  class="card animated bounceIn">
-                        <div class="item item-divider" ng-show="showHeader">
-                            <small>Balance Summary</small>
-                        </div>
-                        <div class="item item-text-wrap">
-                            <p><small><strong>Avl Balance: </strong><span>&#8377;10,00,000</span></small></p>
-                            <p><small><strong>O/S Cr Card: </strong><span>&#8377;5,00,000</span></small></p>
-                            <p><small><strong>Avl Credit: </strong><span>&#8377;15,00,000</span></small></p>
-                        </div>
+        <div class="row row-no-padding">
+            <div class="col">
+                <div  class="card" ng-click="routeState('accounts', {})">
+                    <div class="item item-divider item-icon-right balanced balanced-border" ng-show="showHeader">
+                        <strong ng-bind="balanceSummary.title"></strong>
+                        <i class="icon ion-briefcase"></i>
                     </div>
-                </div>
-                <div class="col col-45">
-                    <div  class="card animated bounceIn">
-                        <div class="item item-divider" ng-show="showHeader">
-                            <small>Spend Summary</small>
-                        </div>
-                        <div class="item item-text-wrap">
-                            <p><small><strong>Last 7 days: </strong><span>&#8377;10,000</span></small></p>
-                            <p><small><strong>Last 30 Days: </strong><span>&#8377;1,50,000</span></small></p>
-                            <p><small><strong>Last 6 months: </strong><span>&#8377;6,00,000</span></small></p>
-                        </div>
+                    <div class="padding-horizontal padding-top" ng-repeat="balRec in balanceSummary.data">
+                        <span>
+                            <strong ng-bind="balRec.bal_type"></strong>
+                        </span>
+                        <span style="float:right;">
+                            {{balRec.avl_bal | currency: '&#8377; '}}
+                        </span>
                     </div>
                 </div>
             </div>
-            <button class="button button-positive" ng-click="toggleHeader()">
-                <span ng-bind="toggleHeaderPrompt"></span>
-            </button>
-        </ion-list>
+            <div class="col">
+                    <div  class="card" ng-click="routeState('transactions')">
+                    <div class="item item-divider item-icon-right assertive assertive-border" ng-show="showHeader">
+                        <strong ng-bind="expenseSummary.title"></strong>
+                        <i class="icon ion-cash"></i>
+                    </div>
+                    <div class="padding-horizontal padding-top" ng-repeat="expSumRec in expenseSummary.data">
+                        <span>
+                            <strong ng-bind="expSumRec.bal_type"></strong>
+                        </span>
+                        <span style="float:right;">
+                            {{expSumRec.exp_amt | currency: '&#8377; '}}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div  class="card row-no-padding" ng-click="routeState('vendors')">
+            <div class="item item-divider item-icon-right calm calm-border" ng-show="showHeader">
+                <strong ng-bind="expenseByVendorTop.title"></strong>
+                <i class="icon ion-android-cart"></i>
+            </div>
+            <div class="padding-horizontal padding-top" ng-repeat="expVenRec in expenseByVendorTop.data">
+                <span>
+                    <strong ng-bind="expVenRec.vendor_name"></strong>
+                </span>
+                <span style="float:right;">
+                    {{expVenRec.exp_amt | currency: '&#8377; '}}
+                </span>
+            </div>
+        </div>
+        <!--
+        <div  class="card row-no-padding">
+            <div class="item item-divider calm-border" ng-show="showHeader">
+                <strong ng-bind="expenseTop.title"></strong>
+            </div>
+            <div class="padding-horizontal" ng-repeat="rec in expenseTop.data">
+                <table style="width:100%">
+                    <tr>
+                        <td style="width:25%"><span ng-bind="rec.date_time | date:'dd-MMM-yy'"></span></td>
+                        <td style="width:50%"><strong ng-bind="rec.vendor_name | limitTo:20"></strong></td> 
+                        <td>
+                            <span style="float:right;">
+                                {{rec.exp_amt | currency: '&#8377; '}}
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        -->
+        <div  class="card row-no-padding" ng-click="routeState('categories')">
+            <div class="item item-divider item-icon-right calm calm-border" ng-show="showHeader">
+                <strong ng-bind="expenseCatTop.title"></strong>
+                <i class="icon ion-pricetags"></i>
+            </div>
+            <div class="padding-horizontal padding-top" ng-repeat="rec in expenseCatTop.data">
+                <span>
+                    <strong ng-bind="rec.category"></strong>
+                </span>
+                <span style="float:right;">
+                    {{rec.amount | currency: '&#8377; '}}
+                </span>
+            </div>
+        </div>
+        <p class="padding-right">
+            <span style="float: right;">
+                <small><i>all expense amounts as of last 30 days</i></small>
+            </span>
+        </p>
+        <!--
+        <button class="button button-positive" ng-click="toggleHeader()">
+            <span ng-bind="toggleHeaderPrompt"></span>
+        </button>
+        -->
     </ion-content>
 </ion-view>
