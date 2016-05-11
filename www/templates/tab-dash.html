@@ -6,6 +6,7 @@
         </button>
         -->
         <div class="row row-no-padding">
+
             <div class="col">
                 <div  class="card" ng-click="routeState('accounts', {})">
                     <div class="item item-divider item-icon-right balanced balanced-border" ng-show="showHeader">
@@ -22,6 +23,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="col">
                     <div  class="card" ng-click="routeState('transactions')">
                     <div class="item item-divider item-icon-right assertive assertive-border" ng-show="showHeader">
@@ -38,7 +40,9 @@
                     </div>
                 </div>
             </div>
+
         </div>
+
         <div  class="card row-no-padding" ng-click="routeState('vendors')">
             <div class="item item-divider item-icon-right calm calm-border" ng-show="showHeader">
                 <strong ng-bind="expenseByVendorTop.title"></strong>
@@ -49,30 +53,11 @@
                     <strong ng-bind="expVenRec.vendor_name"></strong>
                 </span>
                 <span style="float:right;">
-                    {{expVenRec.exp_amt | currency: '&#8377; '}}
+                    {{expVenRec.amount | currency: '&#8377; '}}
                 </span>
             </div>
         </div>
-        <!--
-        <div  class="card row-no-padding">
-            <div class="item item-divider calm-border" ng-show="showHeader">
-                <strong ng-bind="expenseTop.title"></strong>
-            </div>
-            <div class="padding-horizontal" ng-repeat="rec in expenseTop.data">
-                <table style="width:100%">
-                    <tr>
-                        <td style="width:25%"><span ng-bind="rec.date_time | date:'dd-MMM-yy'"></span></td>
-                        <td style="width:50%"><strong ng-bind="rec.vendor_name | limitTo:20"></strong></td> 
-                        <td>
-                            <span style="float:right;">
-                                {{rec.exp_amt | currency: '&#8377; '}}
-                            </span>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>
-        -->
+
         <div  class="card row-no-padding" ng-click="routeState('categories')">
             <div class="item item-divider item-icon-right calm calm-border" ng-show="showHeader">
                 <strong ng-bind="expenseCatTop.title"></strong>
@@ -87,6 +72,7 @@
                 </span>
             </div>
         </div>
+
         <p class="padding-right">
             <span style="float: right;">
                 <small><i>all expense amounts as of last 30 days</i></small>

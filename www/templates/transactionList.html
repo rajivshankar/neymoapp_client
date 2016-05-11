@@ -4,17 +4,38 @@ To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
-<ion-view view-title="Transactions">
+<ion-view view-title="Transactions" on-swipe-down="refreshDataCall()">
+    <ion-nav-buttons side="primary">
+        <span style="float: right;">
+            <a class="button icon ion-android-home" 
+               href="#/tab/dash"></a>
+        </span>
+    </ion-nav-buttons>    
     <ion-content>
-        <div>
+        <div class="padding-vertical">
             <ion-list>
-                <ion-item ng-repeat="rec in itemList" ng-click="showPopup(rec.text[0])">
+                <ion-item ng-repeat="rec in itemList" 
+                          ng-click="showPopup({text:rec.text[0].text_message,
+                                                title: rec.text[0].sender})">
                     <small>
                         <table style="width:100%">
                             <tr>
-                                <td style="width:25%"><span ng-bind="rec.transaction_date_time | date:'dd-MMM-yy'"></span></td>
-                                <td style="width:50%"><strong ng-bind="rec.vendor | limitTo:20"></strong></td> 
-                                <td>
+                                <td style="width:25%">
+                                    <span ng-bind="rec.transaction_date_time | date:'dd-MMM-yy'"></span>
+                                </td>
+                                <td style="width:50%">
+                                    <span>
+                                        <strong ng-if="rec.vendor=='UNKNOWN'">
+                                            *<span ng-bind="rec.vendor_alias | limitTo:15"></span>
+                                        </strong>
+                                        <strong ng-if="rec.vendor!=='UNKNOWN'"
+                                                ng-bind="rec.vendor | limitTo:15"></strong>
+                                    </span>
+                                    <span style="float: right;">
+                                        <i ng-show="rec.text[0].text_message" class="icon balanced ion-android-textsms"></i>
+                                    </span>
+                                </td> 
+                                <td style="width:25%">
                                     <span style="float:right;">
                                         {{rec.amount | currency: '&#8377; '}}
                                     </span>

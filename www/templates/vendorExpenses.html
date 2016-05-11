@@ -4,16 +4,23 @@ To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
-<ion-view view-title="Spend on Vendor">
+<ion-view view-title="Spend on Vendor" on-swipe-down="refreshDataCall()">
+    <ion-nav-buttons side="primary">
+        <span style="float: right;">
+            <a class="button icon ion-android-home" 
+               href="#/tab/dash"></a>
+        </span>
+    </ion-nav-buttons>    
     <ion-content>
         <ion-list>
-            <ion-item ng-repeat="rec in itemList[0].data" 
+            <ion-item class="padding-vertical"
+                      ng-repeat="rec in itemList[0].data" 
                       ng-click="routeState('transactions', 
-                                            {urlPath: 'transactions_filter/?vendor=' + rec.id,
+                                            {urlPath: 'transactions_filter/?vendor=' + rec.id + '&vendor_alias=' + rec.alias_id,
                                             listKey: 'txnByVendor' + rec.id})">
                 <strong ng-bind="rec.vendor_name | limitTo:20"></strong>
                 <span style="float:right;">
-                    {{rec.exp_amt | currency: '&#8377; '}}
+                    {{rec.amount | currency: '&#8377; '}}
                 </span>
             </ion-item>
         </ion-list>

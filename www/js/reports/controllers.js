@@ -80,21 +80,29 @@ controllers.controller('ListCtrl', ['$scope'
     };
     
     $scope.showPopup = function (msg) {
-        console.log("Inside showPopup: " + msg);
-        if (msg) {
+        console.log("Inside showPopup: " + JSON.stringify(msg));
+        if (msg.title) {
             var myPopup = $ionicPopup.show({
-                template: msg,
-                title: 'Text Message',
+                template: msg.text,
+                title: msg.title || 'Text Message',
                 buttons: [
                   {
                     text: 'Close',
                     type: 'button-positive',
                     onTap: function(e) {
-                        console.log("e: " + JSON.stringify(e));
+                        try{
+                            console.log("e: " + JSON.stringify(e));
+                        }
+                        catch(e) {
+                            console.log("Tapped error" + e.message);
+                        }
                         return true;
                     }
                   }
                 ]
+            });
+            myPopup.then(function(res) {
+                console.log('Tapped!', res);
             });
         }
     };
@@ -145,20 +153,30 @@ controllers.controller('ReportsCtrl', ['$scope'
 
     $scope.showChart = function (chartObj) {
         $scope.chartObject = chartObj;
-        var myPopup = $ionicPopup.show({
-        template: '<div google-chart chart="chartObject" style="height:100%; width:100%;"></div>',
-        scope: $scope,
-        buttons: [
-          {
-            text: 'Close',
-            type: 'button-small',
-            onTap: function(e) {
-                console.log("e: " + JSON.stringify(e));
-                return true;
-            }
-          }
-        ]
-        });
+        if(chartObj) {
+            var myPopup = $ionicPopup.show({
+                template: '<div google-chart chart="chartObject" style="height:100%; width:100%;"></div>',
+                scope: $scope,
+                buttons: [
+                  {
+                    text: 'Close',
+                    type: 'button-small',
+                    onTap: function(e) {
+                        try{
+                            console.log("e: " + JSON.stringify(e));
+                        }
+                        catch(e) {
+                            console.log("Tapped error" + e.message);
+                        }
+                        return true;
+                    }
+                  }
+                ]
+            });
+            myPopup.then(function(res) {
+                console.log('Tapped!', res);
+            });
+        }
     }
 }]);
  

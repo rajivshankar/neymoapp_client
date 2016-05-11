@@ -4,18 +4,25 @@ To change this license header, choose License Headers in Project Properties.
 To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
-<ion-view view-title="Spend on Category">
+<ion-view view-title="Spend on Category" on-swipe-down="refreshDataCall()">
+    <ion-nav-buttons side="primary">
+        <span style="float: right;">
+            <a class="button icon ion-android-home" 
+               href="#/tab/dash"></a>
+        </span>
+    </ion-nav-buttons>    
     <ion-content>
         <ion-list>
-                <ion-item ng-repeat="rec in itemList[0].data" 
-                          ng-click="routeState('transactions', 
-                                                {urlPath: 'transactions_filter/?category=' + rec.id,
-                                                 listKey: 'txnByCategory' + rec.id})">
-                    <strong ng-bind="rec.category | limitTo:20"></strong>
-                    <span style="float:right;">
-                        {{rec.amount | currency: '&#8377; '}}
-                    </span>
-                </ion-item>
+            <ion-item class="padding-vertical"
+                      ng-repeat="rec in itemList[0].data" 
+                      ng-click="routeState('transactions', 
+                                            {urlPath: 'transactions_filter/?category=' + rec.id,
+                                             listKey: 'txnByCategory' + rec.id})">
+                <strong ng-bind="rec.category | limitTo:20"></strong>
+                <span style="float:right;">
+                    {{rec.amount | currency: '&#8377; '}}
+                </span>
+            </ion-item>
         </ion-list>
         <ion-infinite-scroll
             ng-if="next"

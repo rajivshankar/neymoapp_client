@@ -61,12 +61,12 @@ mainApp.config(function($stateProvider
 
   // setup an abstract state for the tabs directive
     .state('tab', {
-    url: '/tab',
-    abstract: true,
-    templateUrl: 'templates/tabs.html',
-    controller: 'AppCtrl',
-    controllerAs: 'appCtrl'
-  })
+        url: '/tab',
+        abstract: true,
+        templateUrl: 'templates/tabs.html',
+        controller: 'AppCtrl',
+        controllerAs: 'appCtrl'
+      })
 
   // Each tab has its own nav history stack:
 
