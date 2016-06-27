@@ -1,4 +1,10 @@
 <ion-view view-title="Dashboard">
+    <ion-nav-buttons side="primary">
+        <span style="float: right;">
+            <a class="button icon ion-cash" 
+               ng-click="recordCashExpense()"></a>
+        </span>
+    </ion-nav-buttons>
     <ion-content on-swipe-down="refreshData()">
         <!--
         <button class="button button-block button-energized icon-right ion-stats-bars" ng-click="toggleDebug()">
@@ -8,8 +14,11 @@
         <div class="row row-no-padding">
 
             <div class="col">
-                <div  class="card" ng-click="routeState('accounts', {})">
-                    <div class="item item-divider item-icon-right balanced balanced-border" ng-show="showHeader">
+                <div  class="card" 
+                      ng-show ="balanceSummary" 
+                      ng-click="routeState('accounts', {})">
+                    <div class="item item-divider item-icon-right balanced balanced-border" 
+                         ng-show="showHeader">
                         <strong ng-bind="balanceSummary.title"></strong>
                         <i class="icon ion-briefcase"></i>
                     </div>
@@ -25,7 +34,9 @@
             </div>
 
             <div class="col">
-                    <div  class="card" ng-click="routeState('transactions')">
+                    <div  class="card"
+                          ng-show="expenseSummary"
+                          ng-click="routeState('transactions')">
                     <div class="item item-divider item-icon-right assertive assertive-border" ng-show="showHeader">
                         <strong ng-bind="expenseSummary.title"></strong>
                         <i class="icon ion-cash"></i>
@@ -43,12 +54,14 @@
 
         </div>
 
-        <div  class="card row-no-padding" ng-click="routeState('vendors')">
+        <div  class="card row-no-padding"
+              ng-show="expenseByVendorTop"
+              ng-click="routeState('vendors')">
             <div class="item item-divider item-icon-right calm calm-border" ng-show="showHeader">
                 <strong ng-bind="expenseByVendorTop.title"></strong>
                 <i class="icon ion-android-cart"></i>
             </div>
-            <div class="padding-horizontal padding-top" ng-repeat="expVenRec in expenseByVendorTop.data">
+            <div class="padding-horizontal padding-top" ng-repeat="expVenRec in expenseByVendorTop.data | limitTo:3">
                 <span>
                     <strong ng-bind="expVenRec.vendor_name"></strong>
                 </span>
@@ -58,12 +71,14 @@
             </div>
         </div>
 
-        <div  class="card row-no-padding" ng-click="routeState('categories')">
+        <div  class="card row-no-padding" 
+              ng-show="expenseCatTop"
+              ng-click="routeState('categories')">
             <div class="item item-divider item-icon-right calm calm-border" ng-show="showHeader">
                 <strong ng-bind="expenseCatTop.title"></strong>
                 <i class="icon ion-pricetags"></i>
             </div>
-            <div class="padding-horizontal padding-top" ng-repeat="rec in expenseCatTop.data">
+            <div class="padding-horizontal padding-top" ng-repeat="rec in expenseCatTop.data | limitTo:3">
                 <span>
                     <strong ng-bind="rec.category"></strong>
                 </span>

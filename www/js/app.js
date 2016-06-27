@@ -21,10 +21,14 @@ var mainApp = angular.module('moneyProApp', ['ionic'
 
 mainApp.run(['$localStorage'
                 , '$ionicPlatform'
+                , '$sessionStorage'
                 , '$http'
+                , 'AppUtils'
                 , function($localStorage
                             , $ionicPlatform
+                            , $sessionStorage
                             , $http
+                            , AppUtils
                             ) {
 
     $ionicPlatform.ready(function() {
@@ -45,7 +49,30 @@ mainApp.run(['$localStorage'
     });
     if ($localStorage.userToken) {
         $http.defaults.headers.common.Authorization = "Token " + $localStorage.userToken;
+        rekhaToken = "11cd80eb25912f4ac54dea9be4682cdf525259ab"
+//        $http.defaults.headers.common.Authorization = "Token " + rekhaToken;
     }
+    AppUtils.getAppParams()
+    .then( function (bool_value) {
+        console.log("Successfully set App Params: " + bool_value);
+    }, function (err_value) {
+        console.log("Failed to set App Params: " + err_value);
+    });
+//    var appParams = AppParamService.get(function () {
+//        console.log("App Params read success: " + JSON.stringify(appParams.results));
+//        for (paramsIndex in appParams.results) {
+//            params = appParams.results[paramsIndex]
+//            if (params.bool_value == null){
+//                $sessionStorage[params.key] = params.value;
+//            }
+//            else{
+//                $sessionStorage[params.key] = params.bool_value;
+//            }
+//        }
+//        console.log("sessionStorage: " + JSON.stringify($sessionStorage));
+//    }, function (err) {
+//        console.log("Failed App Params Read: " + JSON.stringify(err));
+//    });
 }]);
 
 mainApp.config(function($stateProvider

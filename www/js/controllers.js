@@ -3,6 +3,7 @@ var controllers = angular.module('moneyProApp.controllers', []);
 
 controllers.controller('AppCtrl', ['$scope'
                                     , '$rootScope'
+                                    , '$q'
                                     , '$ionicPlatform'
                                     , '$localStorage'
                                     , '$sessionStorage'
@@ -12,8 +13,10 @@ controllers.controller('AppCtrl', ['$scope'
                                     , 'SmsListService'
                                     , 'AUTH_EVENTS'
                                     , 'DeviceInfoService'
+                                    , 'AppUtils'
                                     , function ($scope
                                                 , $rootScope
+                                                , $q
                                                 , $ionicPlatform
                                                 , $localStorage
                                                 , $sessionStorage
@@ -23,13 +26,12 @@ controllers.controller('AppCtrl', ['$scope'
                                                 , SmsListService
                                                 , AUTH_EVENTS
                                                 , DeviceInfoService
+                                                , AppUtils
                                     ) {
     /*
      * Define the Login Modal
      * clean up the login modal once the destroy event occurs
      */
-    $scope.debugMode = $sessionStorage.debugMode;
-
     if (!$localStorage.userToken) {
         DeviceInfoService.deviceInfo ()
         .then (HandshakeService.register)
@@ -41,32 +43,62 @@ controllers.controller('AppCtrl', ['$scope'
         });
     }
     
-//    if (!$localStorage.firstFullSmsRun) {
-//        console.log("Inside first full SMS run");
-//        delete $localStorage.lastSmsUploadDate;
-//        $localStorage.firstFullSmsRun = true;
-//    }
-//    delete $localStorage.firstFullSmsRun;
+    processAllSms = function () {
+        SmsListService.cleanProcessedSms();
+        console.log("Process All SMS individually: " 
+                        + JSON.stringify(SmsListService.processSms()));
+    };
+
+    processBulkSms = function () {
+        console.log("Process All SMS in Bulk: " 
+                        + JSON.stringify(SmsListService.processBulkSms()));
+    };
+
     $ionicPlatform.ready(function() {
-//        if(SMS) SMS.setOptions({
-//            license: 'rajiv.shankar@yahoo.com/ee874cd88f918b376be664e7b334a210'
-//        }, function (data) {
-//            console.log('OPtions set success: ' + JSON.stringify(data));
-//        } , function (err) {
-//            console.log('Options set error: ' + JSON.stringify(err));
-//        });
+        $scope.debugMode = $sessionStorage.debugMode;
+        console.log("$scope.debugMode: " + $scope.debugMode)
+        
+        if(SMS) {
+            var setSmsOptions = function () {
+                var deferSetOptions = $q.defer();
+                SMS.setOptions({
+                    license: $sessionStorage.sms_plugin_key
+                }, function (data) {
+                    console.log('sms plugin key: '
+                            + $sessionStorage.sms_plugin_key);
+                    console.log('OPtions set success: ' + JSON.stringify(data));
+                    console.log('$sessionStorage.deleteLastSmsDate: '
+                                    + $sessionStorage.deleteLastSmsDate)
+                    if ($sessionStorage.deleteLastSmsDate == true) {
+                        $sessionStorage.deleteLastSmsDate = false;
+                        delete $localStorage.lastSmsUploadDate;
+                        console.log("last SMS upload date: " 
+                                + $localStorage.lastSmsUploadDate || "no date");
+                        $localStorage.unprocessedSms = [];
+                    }
+                    deferSetOptions.resolve();
+                } , function (err) {
+                    console.log('Options set error: ' + JSON.stringify(err));
+                    deferSetOptions.resolve();
+                });
+                return deferSetOptions.promise;
+            };
+            if (!$sessionStorage.sms_plugin_key){
+                AppUtils.getAppParams()
+                .then(setSmsOptions)
+                .then(processBulkSms);
+            } else {
+                setSmsOptions()
+                .then(processBulkSms);
+            }
+        }
         if(SMS) {
             SMS.startWatch(function(){
         		console.log('watching', 'watching started');
         	}, function(){
         		console.log('failed to start watching');
         	});
-//            SMS.listSMS({}, function (data) {
-//                console.log('SMS data: ' + JSON.stringify(data));
-//            } , function (err) {
-//                console.log('SMS data error: ' + JSON.stringify(err));
-//            });
-        }
+        }   
 
         // Check internet connectivity and display offline or online status
         $sessionStorage.isOnline = $cordovaNetwork.isOnline();
@@ -99,17 +131,11 @@ controllers.controller('AppCtrl', ['$scope'
             showOfflineAlert();
         });
     });
-//    delete $localStorage.lastSmsUploadDate;
-    processAllSms = function () {
-        SmsListService.cleanProcessedSms();
-        console.log("Process All SMS: " + JSON.stringify(SmsListService.processSms()));
-    };
-    
-    processAllSms();
 
     smsArriveListener = function (e) {
         SmsListService.cleanProcessedSms();
-        console.log("Process SMS on new arrival: " + JSON.stringify(SmsListService.processSms(e)));
+        console.log(JSON.stringify(e));
+        console.log("Process SMS on new arrival: " + JSON.stringify(SmsListService.processBulkSms(e)));
     };
 
     $ionicPlatform.on(AUTH_EVENTS.onSmsArrive, smsArriveListener);

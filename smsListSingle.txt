@@ -1,0 +1,11 @@
+﻿{"data": [{
+"text_message": "Rs.870.00 was spent on ur HDFCBank CREDIT Card ending 6077 on 2016-02-14:12:02:42 at SARAVANAN S.Avl bal - Rs.402507.70, curr o/s - Rs.10492.30",
+"sender": "AM-HDFCBK",
+"sent_datetime": "2016-02-14T06:32:56Z",
+"received_datetime": "2016-02-14T06:39:21.704000Z",
+"service_centre": "+919840000246",
+"upload_time": "2016-05-20T16:06:37.748162Z",
+"location_latitude": null,
+"location_longitude": null,
+}]}
+

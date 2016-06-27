@@ -8,21 +8,27 @@
 controllers.controller('DashCtrl', ['$scope'
                                     , 'AccountInfoService'
                                     , 'ReportSQLService'
+                                    , 'CategoriesListService'
+                                    , 'SmsListService'
                                     , '$localStorage'
                                     , '$sessionStorage'
                                     , 'AUTH_EVENTS'
                                     , 'REPORT_NAMES'
                                     , 'TEST_CONST'
                                     , '$state'
+                                    , '$ionicModal'
                                     , function($scope
                                                 , AccountInfoService
                                                 , ReportSQLService
+                                                , CategoriesListService
+                                                , SmsListService
                                                 , $localStorage
                                                 , $sessionStorage
                                                 , AUTH_EVENTS
                                                 , REPORT_NAMES
                                                 , TEST_CONST
                                                 , $state
+                                                , $ionicModal
                                                ) {
     $scope.refreshData = function () {
         console.log('Refreshing Dashboard Data');
@@ -59,7 +65,7 @@ controllers.controller('DashCtrl', ['$scope'
         });
         
         var expenseByVendorTop = ReportSQLService
-                            .reportResource(REPORT_NAMES.expense_by_vendor_top)
+                            .reportResource(REPORT_NAMES.expense_by_vendor)
                             .get(function () {
             console.log("Expense by Vendor read success: " + JSON.stringify(expenseByVendorTop.results[0]));
             $scope.expenseByVendorTop = expenseByVendorTop.results[0];
@@ -69,19 +75,8 @@ controllers.controller('DashCtrl', ['$scope'
             $scope.expenseByVendorTop = $localStorage.lists['expenseByVendorTop'];
         });
 
-        var expenseTop = ReportSQLService
-                            .reportResource(REPORT_NAMES.expense_top)
-                            .get(function () {
-            console.log("Expense Top read success: " + JSON.stringify(expenseTop.results[0]));
-            $scope.expenseTop = expenseTop.results[0];
-            $localStorage.lists['expenseTop'] = $scope.expenseTop;
-        }, function (err) {
-            console.log("Failed Expense Top Read: " + JSON.stringify(err));
-            $scope.expenseTop = $localStorage.lists['expenseTop'];
-        });
-
         var expenseCatTop = ReportSQLService
-                            .reportResource(REPORT_NAMES.expense_by_category_top)
+                            .reportResource(REPORT_NAMES.expense_by_category)
                             .get(function () {
             console.log("Expense Category Top read success: " + JSON.stringify(expenseCatTop.results[0]));
             $scope.expenseCatTop = expenseCatTop.results[0];
@@ -114,5 +109,133 @@ controllers.controller('DashCtrl', ['$scope'
     $scope.routeState = function (path) {
         console.log("Inside routeState: " + path);
         $state.go(path);
+    };
+    
+    $ionicModal.fromTemplateUrl('templates/cashExpenseModal.html', {
+        scope: $scope,
+        animation: 'slide-in-up'
+    }).then(function (modal) {
+        $scope.cashExpenseModal = modal;
+        console.log("Successfully created modal");
+    });
+    
+    //Code for recording cash transaction
+    $scope.recordCashExpense = function () {
+        console.log("Show the Modal");
+        $scope.transaction = {};
+        $scope.transaction.amount = 0;
+        $scope.transaction.amountStr = $scope.transaction.amount.toString();
+        
+        var categoryListGrid = function () {
+            var gridColumnNum = 3;
+            $scope.categoriesGrid = [];
+            rowNum = 0;
+            for (i=0; i<$scope.categoriesList.length; i++) {
+                if (!$scope.categoriesGrid[rowNum]){
+                    $scope.categoriesGrid[rowNum]=[];
+                }
+                $scope.categoriesGrid[rowNum].push($scope.categoriesList[i]);
+                if ((i+1)%gridColumnNum === 0){
+                    rowNum += 1;
+                }
+            }
+        };
+        
+        var categoriesList = CategoriesListService.get(function () {
+            console.log("Categories list read success: " +
+                            JSON.stringify(categoriesList.results));
+            $scope.categoriesList = categoriesList.results;
+            $localStorage.lists['categoriesList'] = $scope.categoriesList;
+            categoryListGrid()
+            console.log("Category Grid (successful read): " +
+                            JSON.stringify($scope.categoriesGrid));
+        }, function (err) {
+            console.log("Failed Categories List Read: " + JSON.stringify(err));
+            $scope.categoriesList = $localStorage.lists['categoriesList'];
+            categoryListGrid();
+            console.log("Category Grid (failed read): " +
+                            JSON.stringify($scope.categoriesGrid));
+        });
+        
+        $scope.confirmCashTxnSave = false;
+        
+        if ($localStorage.confirmCashTxnSave){
+            console.log("localStorage confirm save: " + 
+                            $localStorage.confirmCashTxnSave);
+            $scope.confirmCashTxnSave = $localStorage.confirmCashTxnSave;
+        }
+        
+        $scope.cashExpenseModal.show();
+    };
+    
+    $scope.updateConfirmSave = function () {
+        console.log("Scope's confirmCashTxnSave: " +
+                        $scope.confirmCashTxnSave);
+        $localStorage.confirmCashTxnSave = $scope.confirmCashTxnSave;
+        console.log("Update localStorage confirm save: " + 
+                        $localStorage.confirmCashTxnSave);
+    };
+    
+    $scope.closeCashExpenseModal = function () {
+        console.log("Hide the Modal");
+        $scope.cashExpenseModal.hide();
+    };
+    
+    $scope.updateTextBoxAmount = function () {
+//        console.log("updateTextBoxAmount ");
+        $scope.transaction.amount = Number($scope.transaction.amountStr);
+    };
+
+    $scope.updateSliderAmount = function () {
+//        console.log("updateSliderAmount");
+        $scope.transaction.amountStr = $scope.transaction.amount.toString();
+    };
+    
+    $scope.selectCategory = function (item) {
+        console.log("item ID: " + item.id);
+        console.log("item category: " + item.category);
+        console.log("Amount: " + $scope.transaction.amount);
+        if ($scope.transaction.amount > 0) {
+            var smsRec = {};
+            var currTime = Date.now();
+            var textMessage = "Cash Expense of " + 
+                                TEST_CONST.defaultCurrency+
+                                " "+
+                                $scope.transaction.amount.toString()+
+                                " recorded for "+
+                                item.category;
+            smsRec._id = 0;
+            smsRec.address = "NM-CASHTX";
+            smsRec.body = textMessage;
+            smsRec.date = currTime;
+            smsRec.date_sent = currTime;
+            smsRec.error_code = 0;
+            smsRec.ipmsg_id =  0;
+            smsRec.locked = 0;
+            smsRec.m_size = textMessage.length;
+            smsRec.person = 0;
+            smsRec.protocol= 0;
+            smsRec.read = 1;
+            smsRec.reply_path_present = 0;
+            smsRec.seen = 1;
+            smsRec.service_center = "+000000000000";
+            smsRec.sim_id = 1;
+            smsRec.status = -1;
+            smsRec.thread_id = 0;
+            smsRec.type= 1;
+            smsRec.latitude = null;
+            smsRec.longitude = null;
+
+            smsData = {};
+            smsData.data = smsRec;
+            console.log(JSON.stringify(smsData));
+            SmsListService.cleanProcessedSms();
+            $localStorage.unprocessedSms.push(smsRec);
+            console.log("Process SMS on new arrival: " +
+                    JSON.stringify(SmsListService.processBulkSms(smsData)));
+            $scope.closeCashExpenseModal();
+        } else {
+            console.log("Amount is 0");
+        }
     };
 }]);

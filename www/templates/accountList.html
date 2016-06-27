@@ -18,15 +18,22 @@ and open the template in the editor.
                          {urlPath: 'transactions_filter/?account=' + account.id,
                             listKey: 'txnByAccount' + account.id})">
             <div class="item item-text-wrap item-icon-left item-icon-right">
-                <i ng-show="account.type == 'Credit Card'" class="icon ion-card"></i>
-                <i ng-show="account.type == 'Debit Card'" class="icon ion-briefcase"></i>
-                <i ng-show="account.type == 'Cash Card'" class="icon ion-cash"></i>
+                <i ng-show="account.type == 'Credit Card'" class="icon ion-card assertive"></i>
+                <i ng-show="account.type == 'Debit Card'" class="icon ion-briefcase royal"></i>
+                <i ng-show="account.type == 'Cash Card'" class="icon ion-cash calm"></i>
+                <i ng-show="account.type == 'Account' && account.bank != 'Cash'" class="icon ion-briefcase royal"></i>
+                <i ng-show="account.type == 'Account' && account.bank == 'Cash'" class="icon ion-cash balanced"></i>
                 <span ng-bind="account.bank"> </span>
                 <span ng-bind="account.type"> </span>
-                <span ng-bind="account.name"> </span>
-                <i class="icon ion-android-list"></i>
+                <span ng-hide="account.bank=='Cash'" ng-bind="account.name"> </span>
+<!--                <i class="icon ion-android-list"></i>-->
             </div>  
             <div class="item item-text-wrap">
+                <div class="padding-top" ng-hide="account.balances.available_balance">
+                    <strong class="assertive">
+                        No Balance information available
+                    </strong>
+                </div>
                 <div class="padding-top" ng-show="account.balances.available_balance">
                     <strong>Available Balance: </strong>
                     <span style="float:right;">

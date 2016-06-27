@@ -11,6 +11,14 @@
  * with server side calls to the python middleware
  */
 
+services.factory('AppParamService', ['$resource'
+                                , 'REST_PATH'
+                                , function ($resource
+                                            , REST_PATH
+                                                    ) {
+    return $resource(REST_PATH.host + 'app_params/');
+}]);
+
 services.factory('SmsService', ['$resource'
                                 , 'REST_PATH'
                                 , function ($resource
@@ -89,6 +97,14 @@ services.factory('ReportsGCService', ['$resource'
                                             , REST_PATH
                                                     ) {
     return $resource(REST_PATH.host + 'reports_google_charts/');
+}]);
+
+services.factory('CategoriesListService', ['$resource'
+                                , 'REST_PATH'
+                                , function ($resource
+                                            , REST_PATH
+                                                    ) {
+    return $resource(REST_PATH.host + 'main_categories/');
 }]);
 
 services.factory('GenericRestServices', ['$resource'

@@ -1,0 +1,55 @@
+<ion-modal-view>
+    <ion-header-bar class="bar bar-header bar-positive">
+        <h1 class="title">Record Cash Expense</h1>
+        <a class="button ion-android-exit"
+                ng-click="closeCashExpenseModal()"></a>
+    </ion-header-bar>
+
+<!--    <ion-content>
+        <button class = "button icon icon-left ion-ios-close-outline"
+                ng-click = "closeCashExpenseModal()">Close</button>
+    </ion-content>-->
+    
+    <ion-content class="padding">
+        <label class="item item-input">
+            <span class="input-label">Amount</span>
+            <input ng-model="transaction.amount"
+                   ng-change="updateSliderAmount()"
+                   type="number">
+        </label>
+        <div class="item range range-positive">
+            <i class="icon ion-ios-minus-outline"></i>
+            <input ng-model="transaction.amountStr"
+                   ng-change="updateTextBoxAmount()"
+                   type="range"
+                   name="amount"
+                   min="0" 
+                   max="5000"
+                   step="25">
+            <i class="icon ion-ios-plus"></i>
+        </div>
+        <div class="row" ng-repeat="row in categoriesGrid">
+            <div class="col" ng-repeat="item in row">
+                <button class="button button-small"
+                        ng-click="selectCategory(item)">
+                    <span ng-bind="item.category"></span>
+                </button>
+            </div>
+        </div>
+<!--        
+        <span>Confirm Save </span>
+        <label class="toggle toggle-balanced">
+            <input type="checkbox"
+                   ng-model="confirmCashTxnSave"
+                   ng-change="updateConfirmSave()">
+            <div class="track">
+                <div class="handle"></div>
+            </div>
+        </label>
+        <span style="float: right">
+            <button class="button button-balanced"
+                    ng-show="confirmCashTxnSave">Save</button>
+        </span>
+        -->
+    </ion-content>
+</ion-modal-view>

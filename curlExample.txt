@@ -18,3 +18,6 @@ curl -H "{Authorization: Token 6407dd34c375245c01c98dfe94da17bf7a0a1ac5, Content
 {"text_message":"Jikti","sender":"+447526019132","sent_datetime":"2016-04-18T23:21:49.000Z","received_datetime":"2016-04-18T23:21:50.715Z","service_centre":"+447782000800","location_latitude":null,"location_longitude":null}
 
 {"text_message":"Amazing offer! Get 9GB of 4G data, unlimited UK calls and texts with our UK plan UL for just GBP20/30days. To activate text 12544 to 3535, more info at www.lycamobile.co.uk/plans","sender":"Lycamobile","sent_datetime":"2016-04-13T15:28:40.000Z","received_datetime":"2016-04-13T15:52:01.988Z","service_centre":"+447404000117","location_latitude":null,"location_longitude":null}
+
+//admin curl
+curl -H "Authorization: Token a1264d9f1874ab2be444a2f1a6b1281ad5d33a93" -H "Content-Type: application/json" -X POST -d @smsListSingle.txt http://localhost:8000/restful/txn_bulk_upload/

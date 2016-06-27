@@ -15,28 +15,26 @@ mainApp.constant('AUTH_EVENTS', {
 });
 
 mainApp.constant('REST_PATH', {
-//    host: 'http://localhost:8000/restful/',
-    host: 'https://moneybee-20151115.herokuapp.com/restful/',
+//    host: 'https://moneybee-20151115.herokuapp.com/restful/',
+    host: 'https://neymo.herokuapp.com/restful/',
     device: 'device.json',
     unprocessedText: 'unprocessed_text_data/',
     smsList: 'text-data/',
-    textInput: 'text-data.json'
+    textInput: 'text-data.json',
+    textInputBulk: 'txn_bulk_upload.json'
 });
 
 mainApp.constant('TEST_CONST', {
     number: '+447526019132',
     coordPrecision: 8,
     timeMarginSec: 120,
-    rupeeSymbol: "&#8377;"
+    rupeeSymbol: "&#8377;",
+    defaultCurrency: "INR"
 });
 
 mainApp.constant('REPORT_NAMES', {
     balance_summary: 'balance_summary',
     expense_summary: 'expense_summary/month',
-    expense_by_account: 'expense_by_account',
-    expense_by_vendor_top: 'expense_by_vendor_top/month',
     expense_by_vendor: 'expense_by_vendor/month',
-    expense_by_category_top: 'expense_by_category_top/month',
     expense_by_category: 'expense_by_category/month',
-    expense_top: 'expense_top5/month'    
 });

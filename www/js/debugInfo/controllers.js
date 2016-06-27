@@ -7,6 +7,7 @@
 // debugInfo/controllers.js
 controllers.controller('DebugInfoCtrl', ['$scope'
                                         , '$localStorage'
+                                        , '$sessionStorage'
                                         , 'AppUtils'
                                         , 'REST_PATH'
                                         , 'DeviceInfoService'
@@ -14,6 +15,7 @@ controllers.controller('DebugInfoCtrl', ['$scope'
                                         , 'AUTH_EVENTS'
                                         , function ($scope
                                                     , $localStorage
+                                                    , $sessionStorage
                                                     , AppUtils
                                                     , REST_PATH
                                                     , DeviceInfoService
@@ -75,6 +77,9 @@ controllers.controller('DebugInfoCtrl', ['$scope'
         $scope.latitude  = null;
         $scope.longitude = null;
     });
+    
+    $scope.sessionData = JSON.stringify($sessionStorage);
+    $scope.localStorageData = JSON.stringify($localStorage);
     
     viewSmsList = function () {
         console.log("Debug unprocessed SMS refresh...")
