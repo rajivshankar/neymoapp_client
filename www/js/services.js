@@ -4,9 +4,13 @@ var services = angular.module('moneyProApp.services', []);
 
 services.factory('AppUtils',['$q'
                               , '$sessionStorage'
+                              , '$rootScope'
+                              , 'AUTH_EVENTS'
                               , 'AppParamService'
                               , function ($q
                                           , $sessionStorage
+                                          , $rootScope
+                                          , AUTH_EVENTS
                                           , AppParamService)
                                     {
     service = {
@@ -34,6 +38,9 @@ services.factory('AppUtils',['$q'
                 deferredAppParams.resolve(false);
             });
             return deferredAppParams.promise;
+        },
+        refreshData : function () {
+            $rootScope.$broadcast(AUTH_EVENTS.refreshData);
         }
     };
     return service;

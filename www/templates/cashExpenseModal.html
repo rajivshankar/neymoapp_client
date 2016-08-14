@@ -1,15 +1,17 @@
 <ion-modal-view>
     <ion-header-bar class="bar bar-header bar-positive">
         <h1 class="title">Record Cash Expense</h1>
-        <a class="button ion-android-exit"
+        <!--
+        <a class="button icon-right ion-android-exit"
                 ng-click="closeCashExpenseModal()"></a>
+        -->
     </ion-header-bar>
-
-<!--    <ion-content>
-        <button class = "button icon icon-left ion-ios-close-outline"
-                ng-click = "closeCashExpenseModal()">Close</button>
-    </ion-content>-->
-    
+    <ion-floating-button ng-click="closeCashExpenseModal()"
+                         has-footer="false"
+                         button-color="#ef473a"
+                         icon="ion-android-exit"
+                         icon-color="#fff">
+    </ion-floating-button>
     <ion-content class="padding">
         <label class="item item-input">
             <span class="input-label">Amount</span>
@@ -36,20 +38,5 @@
                 </button>
             </div>
         </div>
-<!--        
-        <span>Confirm Save </span>
-        <label class="toggle toggle-balanced">
-            <input type="checkbox"
-                   ng-model="confirmCashTxnSave"
-                   ng-change="updateConfirmSave()">
-            <div class="track">
-                <div class="handle"></div>
-            </div>
-        </label>
-        <span style="float: right">
-            <button class="button button-balanced"
-                    ng-show="confirmCashTxnSave">Save</button>
-        </span>
-        -->
     </ion-content>
 </ion-modal-view>

@@ -14,14 +14,24 @@ and open the template in the editor.
     <ion-content>
         <ion-list>
             <ion-item class="padding-vertical"
-                      ng-repeat="rec in itemList[0].data" 
-                      ng-click="routeState('transactions', 
+                      ng-repeat="rec in itemList[0].data">
+                <table  style="width: 100%"
+                        ng-click="routeState('transactions', 
                                             {urlPath: 'transactions_filter/?vendor=' + rec.id + '&vendor_alias=' + rec.alias_id,
                                             listKey: 'txnByVendor' + rec.id})">
-                <strong ng-bind="rec.vendor_name | limitTo:20"></strong>
-                <span style="float:right;">
-                    {{rec.amount | currency: '&#8377; '}}
-                </span>
+                    <tr>
+                        <td style="width: 75%; vertical-align: middle">
+                            <h2 ng-bind="rec.vendor_name | limitTo:20"></h2>
+                        </td>
+                        <td  style="width: 25%; vertical-align: middle">
+                            <h2>
+                                <span style="float:right;">
+                                    {{rec.amount | currency: '&#8377; '}}
+                                </span>
+                            </h2>
+                        </td>
+                    </tr>
+                </table>
             </ion-item>
         </ion-list>
         <ion-infinite-scroll

@@ -272,7 +272,7 @@ services.factory('SmsListService', ['$localStorage'
                     maxCount : smsCount // count of SMS to return each time
                 };
                 console.log("smsFilter: " + JSON.stringify(smsFilter));
-                SMS.listSMS(smsFilter, tempProcessSms, tempErrProcessSms)
+                SMS.listSMS(smsFilter, tempProcessSms, tempErrProcessSms);
             }
         });
         return readSmsDeferred.promise;
@@ -326,7 +326,7 @@ services.factory('SmsListService', ['$localStorage'
         cleanProcessedSms: function () {
             var tmpArray = [];
             console.log("Cleaning up Unprocessed SMS List...");
-            for (i in $localStorage.unprocessedSms) {
+            for (var i in $localStorage.unprocessedSms) {
                 if ($localStorage.unprocessedSms[i].processedFlag === 'N') {
                     tmpArray.push($localStorage.unprocessedSms[i]);
                 }

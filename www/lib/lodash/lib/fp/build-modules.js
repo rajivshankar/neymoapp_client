@@ -2,17 +2,15 @@
 
 var _ = require('lodash'),
     async = require('async'),
-    fs = require('fs-extra'),
     glob = require('glob'),
     path = require('path');
 
-var mapping = require('../../fp/_mapping');
+var file = require('../common/file'),
+    mapping = require('../common/mapping'),
+    util = require('../common/util');
 
-var templatePath = path.join(__dirname, 'template');
-
-var template = _.transform(glob.sync(path.join(templatePath, '*.jst')), function(result, filePath) {
-  result[path.basename(filePath, '.jst')] = _.template(fs.readFileSync(filePath));
-}, {});
+var templatePath = path.join(__dirname, 'template/modules'),
+    template = file.globTemplate(path.join(templatePath, '*.jst'));
 
 var aryMethods = _.union(
   mapping.aryMethod[1],
@@ -35,22 +33,61 @@ var categories = [
   'util'
 ];
 
-function isAlias(funcName) {
-  return _.has(mapping.aliasToReal, funcName);
+var ignored = [
+  '_*.js',
+  'core.js',
+  'core.min.js',
+  'fp.js',
+  'index.js',
+  'lodash.js',
+  'lodash.min.js'
+];
+
+/**
+ * Checks if `name` is a method alias.
+ *
+ * @private
+ * @param {string} name The name to check.
+ * @returns {boolean} Returns `true` if `name` is a method alias, else `false`.
+ */
+function isAlias(name) {
+  return _.has(mapping.aliasToReal, name);
 }
 
-function isCategory(funcName) {
-  return _.includes(categories, funcName);
+/**
+ * Checks if `name` is a category name.
+ *
+ * @private
+ * @param {string} name The name to check.
+ * @returns {boolean} Returns `true` if `name` is a category name, else `false`.
+ */
+function isCategory(name) {
+  return _.includes(categories, name);
 }
 
-function isThru(funcName) {
-  return !_.includes(aryMethods, funcName);
+/**
+ * Checks if `name` belongs to a method that's passed thru and not wrapped.
+ *
+ * @private
+ * @param {string} name The name to check.
+ * @returns {boolean} Returns `true` if `name` is of a pass thru method,
+ *  else `false`.
+ */
+function isThru(name) {
+  return !_.includes(aryMethods, name);
 }
 
+/**
+ * Gets metadata for `func`.
+ *
+ * @private
+ * @param {Function} func The function to query.
+ * @returns {*} Returns the metadata for `func`.
+ */
 function getTemplate(moduleName) {
   var data = {
-    'key': mapping.key,
-    'name': _.result(mapping.aliasToReal, moduleName, moduleName)
+    'name': _.get(mapping.aliasToReal, moduleName, moduleName),
+    'mapping': mapping
   };
 
   if (isAlias(moduleName)) {
@@ -67,49 +104,47 @@ function getTemplate(moduleName) {
 
 /*----------------------------------------------------------------------------*/
 
-function onComplete(error) {
-  if (error) {
-    throw error;
-  }
-}
-
+/**
+ * Creates FP modules at the `target` path.
+ *
+ * @private
+ * @param {string} target The output directory path.
+ */
 function build(target) {
+  target = path.resolve(target);
+
   var fpPath = path.join(target, 'fp');
 
   // Glob existing lodash module paths.
   var modulePaths = glob.sync(path.join(target, '*.js'), {
     'nodir': true,
-    'ignore': [
-      '_*.js',
-      'core.js',
-      'fp.js',
-      'index.js',
-      'lodash.js'
-    ].map(function(filename) {
+    'ignore': ignored.map(function(filename) {
       return path.join(target, filename);
     })
   });
 
   // Add FP alias and remapped module paths.
-  _.each([mapping.aliasToReal, mapping.key], function(data) {
+  _.each([mapping.aliasToReal, mapping.remap], function(data) {
     _.forOwn(data, function(realName, alias) {
-      modulePaths.push(path.join(target, alias + '.js'));
+      var modulePath = path.join(target, alias + '.js');
+      if (!_.includes(modulePaths, modulePath)) {
+        modulePaths.push(modulePath);
+      }
     });
   });
 
-  modulePaths = _.uniq(modulePaths);
-
   var actions = modulePaths.map(function(modulePath) {
     var moduleName = path.basename(modulePath, '.js');
-    return _.partial(fs.writeFile, path.join(fpPath, moduleName + '.js'), getTemplate(moduleName));
+    return file.write(path.join(fpPath, moduleName + '.js'), getTemplate(moduleName));
   });
 
-  actions.unshift(_.partial(fs.copy, path.join(__dirname, '../../fp'), fpPath));
-  actions.push(_.partial(fs.writeFile, path.join(target, 'fp.js'), template.fp()));
-  actions.push(_.partial(fs.writeFile, path.join(fpPath, 'convert.js'), template.convert()));
-  actions.push(_.partial(fs.writeFile, path.join(fpPath, '_util.js'), template._util()));
+  actions.unshift(file.copy(path.join(__dirname, '../../fp'), fpPath));
+  actions.push(file.write(path.join(fpPath, '_falseOptions.js'), template._falseOptions()));
+  actions.push(file.write(path.join(fpPath, '_util.js'), template._util()));
+  actions.push(file.write(path.join(target, 'fp.js'), template.fp()));
+  actions.push(file.write(path.join(fpPath, 'convert.js'), template.convert()));
 
-  async.series(actions, onComplete);
+  async.series(actions, util.pitch);
 }
 
 build(_.last(process.argv));

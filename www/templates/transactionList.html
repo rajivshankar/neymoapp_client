@@ -14,35 +14,39 @@ and open the template in the editor.
     <ion-content>
         <div class="padding-vertical">
             <ion-list>
-                <ion-item ng-repeat="rec in itemList" 
-                          ng-click="showPopup({text:rec.text[0].text_message,
+                <ion-item ng-repeat="rec in itemList"
+                          class="item-remove-animate item-icon-right">
+                    <table style="width:100%">
+                        <tr ng-click="showPopup({text:rec.text[0].text_message,
                                                 title: rec.text[0].sender})">
-                    <small>
-                        <table style="width:100%">
-                            <tr>
-                                <td style="width:25%">
+                            <td style="width:75%; vertical-align: middle">
+                                <p>
                                     <span ng-bind="rec.transaction_date_time | date:'dd-MMM-yy'"></span>
-                                </td>
-                                <td style="width:50%">
-                                    <span>
-                                        <strong ng-if="rec.vendor=='UNKNOWN'">
-                                            *<span ng-bind="rec.vendor_alias | limitTo:15"></span>
-                                        </strong>
-                                        <strong ng-if="rec.vendor!=='UNKNOWN'"
-                                                ng-bind="rec.vendor | limitTo:15"></strong>
-                                    </span>
-                                    <span style="float: right;">
-                                        <i ng-show="rec.text[0].text_message" class="icon balanced ion-android-textsms"></i>
-                                    </span>
-                                </td> 
-                                <td style="width:25%">
-                                    <span style="float:right;">
+                                </p>
+                                <h2 ng-if="rec.vendor=='UNKNOWN'">
+                                    *<span ng-bind="rec.vendor_alias"></span>
+                                </h2>
+                                <h2 ng-if="rec.vendor!=='UNKNOWN'"
+                                        ng-bind="rec.vendor">
+                                </h2>
+                            </td>
+                            <td style="width:25%; vertical-align: middle">
+                                <strong><p>
+                                    <span style="float:right">
                                         {{rec.amount | currency: '&#8377; '}}
                                     </span>
-                                </td>
-                            </tr>
-                        </table>
-                    </small>
+                                </p></strong>
+                            </td>
+                        </tr>
+                    </table>
+                    <i class="icon ion-android-more-vertical"
+                        ng-if="rec.is_cash_txn==true">
+                    </i>
+                    <ion-option-button class="button-assertive"
+                                       ng-if="rec.is_cash_txn==true"
+                                       ng-click="deleteItem(rec.id)">
+                        Delete
+                    </ion-option-button>
                 </ion-item>
             </ion-list>
         </div>

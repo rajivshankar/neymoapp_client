@@ -10,24 +10,28 @@ controllers.controller('DashCtrl', ['$scope'
                                     , 'ReportSQLService'
                                     , 'CategoriesListService'
                                     , 'SmsListService'
+                                    , '$rootScope'
                                     , '$localStorage'
                                     , '$sessionStorage'
                                     , 'AUTH_EVENTS'
                                     , 'REPORT_NAMES'
                                     , 'TEST_CONST'
                                     , '$state'
+                                    , '$ionicPopup'
                                     , '$ionicModal'
                                     , function($scope
                                                 , AccountInfoService
                                                 , ReportSQLService
                                                 , CategoriesListService
                                                 , SmsListService
+                                                , $rootScope
                                                 , $localStorage
                                                 , $sessionStorage
                                                 , AUTH_EVENTS
                                                 , REPORT_NAMES
                                                 , TEST_CONST
                                                 , $state
+                                                , $ionicPopup
                                                 , $ionicModal
                                                ) {
     $scope.refreshData = function () {
@@ -86,11 +90,11 @@ controllers.controller('DashCtrl', ['$scope'
             $scope.expenseCatTop = $localStorage.lists['expenseCatTop'];
         });
 
-    }
+    };
     
     $scope.refreshData();
     
-    $scope.$on(AUTH_EVENTS.refreshData, $scope.refreshData);
+    $rootScope.$on(AUTH_EVENTS.refreshData, $scope.refreshData);
     
     $scope.toggleDebug = function() {
         $sessionStorage.debugMode = $sessionStorage.debugMode ? !$sessionStorage.debugMode : false;
@@ -104,7 +108,7 @@ controllers.controller('DashCtrl', ['$scope'
     $scope.toggleHeader = function () {
         $scope.showHeader = !$scope.showHeader;
         $scope.toggleHeaderPrompt = $scope.showHeader ? "Hide Headers" : "Show Headers";
-    }
+    };
     
     $scope.routeState = function (path) {
         console.log("Inside routeState: " + path);
@@ -125,7 +129,7 @@ controllers.controller('DashCtrl', ['$scope'
         $scope.transaction = {};
         $scope.transaction.amount = 0;
         $scope.transaction.amountStr = $scope.transaction.amount.toString();
-        
+
         var categoryListGrid = function () {
             var gridColumnNum = 3;
             $scope.categoriesGrid = [];
@@ -157,23 +161,7 @@ controllers.controller('DashCtrl', ['$scope'
                             JSON.stringify($scope.categoriesGrid));
         });
         
-        $scope.confirmCashTxnSave = false;
-        
-        if ($localStorage.confirmCashTxnSave){
-            console.log("localStorage confirm save: " + 
-                            $localStorage.confirmCashTxnSave);
-            $scope.confirmCashTxnSave = $localStorage.confirmCashTxnSave;
-        }
-        
         $scope.cashExpenseModal.show();
-    };
-    
-    $scope.updateConfirmSave = function () {
-        console.log("Scope's confirmCashTxnSave: " +
-                        $scope.confirmCashTxnSave);
-        $localStorage.confirmCashTxnSave = $scope.confirmCashTxnSave;
-        console.log("Update localStorage confirm save: " + 
-                        $localStorage.confirmCashTxnSave);
     };
     
     $scope.closeCashExpenseModal = function () {
@@ -204,36 +192,51 @@ controllers.controller('DashCtrl', ['$scope'
                                 $scope.transaction.amount.toString()+
                                 " recorded for "+
                                 item.category;
-            smsRec._id = 0;
-            smsRec.address = "NM-CASHTX";
-            smsRec.body = textMessage;
-            smsRec.date = currTime;
-            smsRec.date_sent = currTime;
-            smsRec.error_code = 0;
-            smsRec.ipmsg_id =  0;
-            smsRec.locked = 0;
-            smsRec.m_size = textMessage.length;
-            smsRec.person = 0;
-            smsRec.protocol= 0;
-            smsRec.read = 1;
-            smsRec.reply_path_present = 0;
-            smsRec.seen = 1;
-            smsRec.service_center = "+000000000000";
-            smsRec.sim_id = 1;
-            smsRec.status = -1;
-            smsRec.thread_id = 0;
-            smsRec.type= 1;
-            smsRec.latitude = null;
-            smsRec.longitude = null;
+            // Confirm save
+            var confirmPopup = $ionicPopup.confirm({
+                title: '<h4>Confirm Cash Transaction</h4>',
+                template: textMessage,
+                cancelType: 'button button-small',
+                okText: 'Save',
+                okType: 'button-positive button-small'
+            });
 
-            smsData = {};
-            smsData.data = smsRec;
-            console.log(JSON.stringify(smsData));
-            SmsListService.cleanProcessedSms();
-            $localStorage.unprocessedSms.push(smsRec);
-            console.log("Process SMS on new arrival: " +
-                    JSON.stringify(SmsListService.processBulkSms(smsData)));
-            $scope.closeCashExpenseModal();
+            confirmPopup.then(function(res) {
+                if(res) {
+                    smsRec._id = 0;
+                    smsRec.address = "NM-CASHTX";
+                    smsRec.body = textMessage;
+                    smsRec.date = currTime;
+                    smsRec.date_sent = currTime;
+                    smsRec.error_code = 0;
+                    smsRec.ipmsg_id =  0;
+                    smsRec.locked = 0;
+                    smsRec.m_size = textMessage.length;
+                    smsRec.person = 0;
+                    smsRec.protocol= 0;
+                    smsRec.read = 1;
+                    smsRec.reply_path_present = 0;
+                    smsRec.seen = 1;
+                    smsRec.service_center = "+000000000000";
+                    smsRec.sim_id = 1;
+                    smsRec.status = -1;
+                    smsRec.thread_id = 0;
+                    smsRec.type= 1;
+                    smsRec.latitude = null;
+                    smsRec.longitude = null;
+
+                    smsData = {};
+                    smsData.data = smsRec;
+                    console.log(JSON.stringify(smsData));
+                    SmsListService.cleanProcessedSms();
+                    $localStorage.unprocessedSms.push(smsRec);
+                    console.log("Process SMS on new arrival: " +
+                            JSON.stringify(SmsListService.processBulkSms(smsData)));
+                    $scope.closeCashExpenseModal();
+                } else {
+                    console.log('You are not sure');
+                }
+            });
         } else {
             console.log("Amount is 0");
         }

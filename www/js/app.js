@@ -17,6 +17,7 @@ var mainApp = angular.module('moneyProApp', ['ionic'
                                             , 'ngResource'
                                             , 'ngSanitize'
                                             , 'googlechart'
+                                            , 'ion-floating-menu'
                                         ]);
 
 mainApp.run(['$localStorage'
@@ -35,10 +36,30 @@ mainApp.run(['$localStorage'
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
         if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
-          cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-          cordova.plugins.Keyboard.disableScroll(true);
-
+            cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+            cordova.plugins.Keyboard.disableScroll(true);
+            //Start the backgorund mode for this app
+            cordova.plugins.backgroundMode.enable();
         }
+        $sessionStorage.isActive = true;
+        
+        cordova.plugins.backgroundMode.onactivate = function() {
+            console.log("Activated background Mode");
+            console.log("cordova.plugins.backgroundMode.isEnabled: " + cordova.plugins.backgroundMode.isEnabled());
+            console.log("cordova.plugins.backgroundMode.isActive: " + cordova.plugins.backgroundMode.isActive());
+            $sessionStorage.isActive = cordova.plugins.backgroundMode.isActive();
+        };
+        
+        cordova.plugins.backgroundMode.ondeactivate = function() {
+            console.log("DEactivated background Mode");
+            console.log("cordova.plugins.backgroundMode.isEnabled: " + cordova.plugins.backgroundMode.isEnabled());
+            console.log("cordova.plugins.backgroundMode.isActive: " + cordova.plugins.backgroundMode.isActive());
+            $sessionStorage.isActive = cordova.plugins.backgroundMode.isActive();
+        };
+        
+        cordova.plugins.backgroundMode.configure({
+            silent: true
+        });
     
         if (window.StatusBar) {
           // org.apache.cordova.statusbar required
@@ -46,6 +67,7 @@ mainApp.run(['$localStorage'
         }
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
+        
     });
     if ($localStorage.userToken) {
         $http.defaults.headers.common.Authorization = "Token " + $localStorage.userToken;
@@ -187,6 +209,7 @@ mainApp.config(function($stateProvider
         params: {
             urlPath: 'transactions_filter/'
             , listKey: 'transactionList'
+            , deleteUrlPath: 'transactions_manual/'
         },
         templateUrl: 'templates/transactionList.html',
         controller: 'ListCtrl',

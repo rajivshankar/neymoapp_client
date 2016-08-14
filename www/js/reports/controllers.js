@@ -18,6 +18,8 @@ controllers.controller('ListCtrl', ['$scope'
                                     , 'AUTH_EVENTS'
                                     , 'REST_PATH'
                                     , '$stateParams'
+                                    , '$rootScope'
+                                    , '$ionicPopup'
                                     , '$state'
                                     , function($scope
                                                 , $ionicPopup
@@ -26,9 +28,16 @@ controllers.controller('ListCtrl', ['$scope'
                                                 , AUTH_EVENTS
                                                 , REST_PATH
                                                 , $stateParams
+                                                , $rootScope
+                                                , $ionicPopup
                                                 , $state
                                                         ) {
     var initialLink = REST_PATH.host + $stateParams.urlPath;
+    try{
+        var deleteItemLink = REST_PATH.host + $stateParams.deleteUrlPath;
+    }catch (e) {
+        console.log('Error in delete Url Path: ' + JSON.stringify(e));
+    }
     // for offline work
     var listKey = $stateParams.listKey
     $scope.refreshData = function (link) {
@@ -67,7 +76,7 @@ controllers.controller('ListCtrl', ['$scope'
         $scope.refreshData(initialLink);
     };
     
-    $scope.$on(AUTH_EVENTS.refreshData, $scope.refreshDataCall);
+    $rootScope.$on(AUTH_EVENTS.refreshData, $scope.refreshDataCall);
     
     $scope.routeState = function (path, params) {
         console.log("Inside routeState: " + path + params);
@@ -105,6 +114,37 @@ controllers.controller('ListCtrl', ['$scope'
                 console.log('Tapped!', res);
             });
         }
+    };
+    
+    $scope.deleteItem = function(id){
+        var objectLink = deleteItemLink + id.toString() + '/';
+        console.log(objectLink);
+        delResource  = GenericRestServices.genericResource(objectLink).get(function (item) {
+            console.log(JSON.stringify(item));
+                        // Confirm save
+            var confirmPopup = $ionicPopup.confirm({
+                title: '<h4>Confirm Delete</h4>',
+                template: "",
+                cancelType: 'button button-small',
+                okText: 'Delete',
+                okType: 'button-assertive button-small'
+            });
+
+            confirmPopup.then(function(res) {
+                if(res) {
+                    item.$delete({}, function () {
+                        console.log("Successfully deleted");
+                        $rootScope.$broadcast(AUTH_EVENTS.refreshData);
+                    }, function () {
+                        console.log("Deleted Failed");
+                    });
+                } else {
+                    console.log('You are not sure');
+                }
+            });
+        }, function () {
+            console.log("Del Resource not found");
+        });
     };
 }]);
 
