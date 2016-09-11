@@ -34,7 +34,6 @@
     "angular-mocks": "^1.5.3",
     "angular-resource": "^1.5.3",
     "angular-google-chart": "^0.1.0",
-    "angular-material": "^1.0.9",
     "ion-floating-menu": "^1.0.1"
   },
   "resolutions": {
