@@ -1,10 +1,8 @@
 <ion-modal-view>
     <ion-header-bar class="bar bar-header bar-positive">
         <h1 class="title">Record Cash Expense</h1>
-        <!--
         <a class="button icon-right ion-android-exit"
                 ng-click="closeCashExpenseModal()"></a>
-        -->
     </ion-header-bar>
     <ion-floating-button ng-click="closeCashExpenseModal()"
                          has-footer="false"
@@ -13,11 +11,13 @@
                          icon-color="#fff">
     </ion-floating-button>
     <ion-content class="padding">
-        <label class="item item-input">
-            <span class="input-label">Amount</span>
+        <label class="item item-input item-floating-label">
+            <span class="input-label dark"><strong>Amount</strong></span>
             <input ng-model="transaction.amount"
                    ng-change="updateSliderAmount()"
-                   type="number">
+                   type="number"
+                   min="0"
+                   placeholder="Type in the amount here or use the slider below">
         </label>
         <div class="item range range-positive">
             <i class="icon ion-ios-minus-outline"></i>
@@ -30,12 +30,20 @@
                    step="25">
             <i class="icon ion-ios-plus"></i>
         </div>
-        <div class="row" ng-repeat="row in categoriesGrid">
-            <div class="col" ng-repeat="item in row">
-                <button class="button button-small"
-                        ng-click="selectCategory(item)">
-                    <span ng-bind="item.category"></span>
-                </button>
+        <br>
+        <div class="row row-category"
+             ng-repeat="row in categoriesGrid">
+            <div class="col text-center col-center col-category"
+                 ng-repeat="item in row">
+                <div ng-click="selectCategory(item)">
+                    <button class="button button-outline button-category"
+                            ng-class="item.icon_colour">
+                        <i class="icon-category"
+                           ng-class="[item.mdiOrIcon, item.icon_name]"></i>
+                    </button><br>
+                    <small><span class="text-category"
+                                 ng-bind="item.category"></span></small>
+                </div>
             </div>
         </div>
     </ion-content>

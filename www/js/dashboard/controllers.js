@@ -19,6 +19,8 @@ controllers.controller('DashCtrl', ['$scope'
                                     , '$state'
                                     , '$ionicPopup'
                                     , '$ionicModal'
+                                    , '$timeout'
+                                    , '$ionicPlatform'
                                     , function($scope
                                                 , AccountInfoService
                                                 , ReportSQLService
@@ -33,6 +35,8 @@ controllers.controller('DashCtrl', ['$scope'
                                                 , $state
                                                 , $ionicPopup
                                                 , $ionicModal
+                                                , $timeout
+                                                , $ionicPlatform
                                                ) {
     $scope.refreshData = function () {
         console.log('Refreshing Dashboard Data');
@@ -123,44 +127,74 @@ controllers.controller('DashCtrl', ['$scope'
         console.log("Successfully created modal");
     });
     
+    var createCategoryGrid = function (categoriesList
+                                       , gridColumnNum
+                                       ){
+        categoriesGrid = [];
+        rowNum = 0;
+        for (i=0; i<categoriesList.length; i++) {
+            if (!categoriesGrid[rowNum]){
+                categoriesGrid[rowNum]=[];
+            }
+            try {
+                console.log(categoriesList[i].category + '::' + categoriesList[i].icon_name);
+                if (categoriesList[i].icon_name.substr(0,4) == 'mdi-'){
+                    categoriesList[i].mdiOrIcon = 'mdi';
+                } else {
+                    categoriesList[i].mdiOrIcon = 'icon';
+                }
+                console.log(categoriesList[i].category + '::' + categoriesList[i].mdiOrIcon);
+            }
+            catch(err) {
+                console.log("Category" + err.message);
+                categoriesList[i].icon_name = "";
+            }
+            try {
+                categoriesList[i].icon_colour = 'button-' + categoriesList[i].icon_colour;
+                console.log(categoriesList[i].category + "::" + categoriesList[i].icon_colour);
+            }
+            catch(err) {
+                console.log("Category" + err.message);
+                categoriesList[i].icon_colour = "";
+            }
+            categoriesGrid[rowNum].push(categoriesList[i]);
+            if ((i+1)%gridColumnNum === 0){
+                rowNum += 1;
+            }
+        }
+        return categoriesGrid;
+    };
+    
     //Code for recording cash transaction
     $scope.recordCashExpense = function () {
         console.log("Show the Modal");
         $scope.transaction = {};
-        $scope.transaction.amount = 0;
-        $scope.transaction.amountStr = $scope.transaction.amount.toString();
-
-        var categoryListGrid = function () {
-            var gridColumnNum = 3;
-            $scope.categoriesGrid = [];
-            rowNum = 0;
-            for (i=0; i<$scope.categoriesList.length; i++) {
-                if (!$scope.categoriesGrid[rowNum]){
-                    $scope.categoriesGrid[rowNum]=[];
-                }
-                $scope.categoriesGrid[rowNum].push($scope.categoriesList[i]);
-                if ((i+1)%gridColumnNum === 0){
-                    rowNum += 1;
-                }
-            }
-        };
+        $scope.transaction.amount = "";
+        $scope.transaction.amountStr = "0";//$scope.transaction.amount.toString();
         
         var categoriesList = CategoriesListService.get(function () {
             console.log("Categories list read success: " +
                             JSON.stringify(categoriesList.results));
             $scope.categoriesList = categoriesList.results;
             $localStorage.lists['categoriesList'] = $scope.categoriesList;
-            categoryListGrid()
+            $scope.categoriesGrid = createCategoryGrid($scope.categoriesList, 4);
             console.log("Category Grid (successful read): " +
                             JSON.stringify($scope.categoriesGrid));
         }, function (err) {
             console.log("Failed Categories List Read: " + JSON.stringify(err));
             $scope.categoriesList = $localStorage.lists['categoriesList'];
-            categoryListGrid();
+            $scope.categoriesGrid = createCategoryGrid($scope.categoriesList, 4);
             console.log("Category Grid (failed read): " +
                             JSON.stringify($scope.categoriesGrid));
         });
         
+        $ionicPlatform.ready(function() {
+            if (analytics) {
+                var viewName = "Cash Transaction Input";
+                analytics.trackView(viewName);
+                console.log('View tracked by analytics: ' + viewName);
+            }
+        });
         $scope.cashExpenseModal.show();
     };
     
@@ -168,10 +202,13 @@ controllers.controller('DashCtrl', ['$scope'
         console.log("Hide the Modal");
         $scope.cashExpenseModal.hide();
     };
-    
     $scope.updateTextBoxAmount = function () {
 //        console.log("updateTextBoxAmount ");
-        $scope.transaction.amount = Number($scope.transaction.amountStr);
+        if (Number($scope.transaction.amountStr) > 0){
+            $scope.transaction.amount = Number($scope.transaction.amountStr);
+        } else {
+            $scope.transaction.amount = "";
+        }
     };
 
     $scope.updateSliderAmount = function () {
@@ -180,63 +217,113 @@ controllers.controller('DashCtrl', ['$scope'
     };
     
     $scope.selectCategory = function (item) {
-        console.log("item ID: " + item.id);
-        console.log("item category: " + item.category);
+        $scope.selectedItem = item;
+        console.log("item ID: " + $scope.selectedItem.id);
+        console.log("item category: " + $scope.selectedItem.category);
+        console.log("item category children: " + JSON.stringify($scope.selectedItem.children));
         console.log("Amount: " + $scope.transaction.amount);
         if ($scope.transaction.amount > 0) {
             var smsRec = {};
             var currTime = Date.now();
-            var textMessage = "Cash Expense of " + 
-                                TEST_CONST.defaultCurrency+
-                                " "+
-                                $scope.transaction.amount.toString()+
-                                " recorded for "+
-                                item.category;
+            $scope.subCategoriesGrid = createCategoryGrid($scope.selectedItem.children, 3);
             // Confirm save
-            var confirmPopup = $ionicPopup.confirm({
-                title: '<h4>Confirm Cash Transaction</h4>',
-                template: textMessage,
-                cancelType: 'button button-small',
-                okText: 'Save',
-                okType: 'button-positive button-small'
+            var saveCashTransaction = function(){
+                console.log("Category: " + $scope.selectedItem.category);
+                var textMessage = "Cash Expense of " + 
+                                    TEST_CONST.defaultCurrency+
+                                    " "+
+                                    $scope.transaction.amount.toString()+
+                                    " recorded for "+
+                                    $scope.selectedItem.category;
+                smsRec._id = 0;
+                smsRec.address = "NM-CASHTX";
+                smsRec.body = textMessage;
+                smsRec.date = currTime;
+                smsRec.date_sent = currTime;
+                smsRec.error_code = 0;
+                smsRec.ipmsg_id =  0;
+                smsRec.locked = 0;
+                smsRec.m_size = textMessage.length;
+                smsRec.person = 0;
+                smsRec.protocol= 0;
+                smsRec.read = 1;
+                smsRec.reply_path_present = 0;
+                smsRec.seen = 1;
+                smsRec.service_center = "+000000000000";
+                smsRec.sim_id = 1;
+                smsRec.status = -1;
+                smsRec.thread_id = 0;
+                smsRec.type= 1;
+                smsRec.latitude = null;
+                smsRec.longitude = null;
+
+                smsData = {};
+                smsData.data = smsRec;
+                console.log(JSON.stringify(smsData));
+                SmsListService.cleanProcessedSms();
+                $localStorage.unprocessedSms.push(smsRec);
+                console.log("Process SMS on new arrival: " +
+                        JSON.stringify(SmsListService.processBulkSms(smsData)));
+                $ionicPlatform.ready(function() {
+                    if (analytics) {
+                        var eventCategory = "Cash";
+                        var eventAction = "Input";
+                        var eventLabel = $scope.selectedItem.category;
+                        var eventValue = $scope.transaction.amount;
+                        analytics.trackEvent(eventCategory
+                                            , eventAction
+                                            , eventLabel
+                                            , eventValue);
+                        console.log('Event tracked by analytics: ' +
+                                            eventCategory + '::' +
+                                            eventAction + '::' +
+                                            eventLabel + '::' +
+                                            eventValue.toString());
+                    }
+                });
+
+                var confirmPopup = $ionicPopup.show({
+                    title: "Success!",
+                    template: textMessage
+                });
+                
+                $timeout(function() {
+                    confirmPopup.close(); //close the popup after 3 seconds for some reason
+                }, 2000);
+                
+                $scope.closeCashExpenseModal();
+            };
+
+            var showPopup = $ionicPopup.show({
+                title: '<h4>Confirm</h4>',
+                subTitle: 'Choose sub-category below or confirm parent',
+                templateUrl: 'templates/cashSubCategories.html',
+                scope: $scope,
+                buttons: [
+                    {
+                        text: 'Cancel',
+                        type: 'button-small',
+                        onTap: function(e) {
+                            console.log('You are not sure');
+                        }
+                    },
+                    {
+                        text: $scope.selectedItem.category,
+                        type: 'button-positive button-small',
+                        onTap: function(e) {
+                            saveCashTransaction();
+                        }
+                    }
+                ]
             });
 
-            confirmPopup.then(function(res) {
-                if(res) {
-                    smsRec._id = 0;
-                    smsRec.address = "NM-CASHTX";
-                    smsRec.body = textMessage;
-                    smsRec.date = currTime;
-                    smsRec.date_sent = currTime;
-                    smsRec.error_code = 0;
-                    smsRec.ipmsg_id =  0;
-                    smsRec.locked = 0;
-                    smsRec.m_size = textMessage.length;
-                    smsRec.person = 0;
-                    smsRec.protocol= 0;
-                    smsRec.read = 1;
-                    smsRec.reply_path_present = 0;
-                    smsRec.seen = 1;
-                    smsRec.service_center = "+000000000000";
-                    smsRec.sim_id = 1;
-                    smsRec.status = -1;
-                    smsRec.thread_id = 0;
-                    smsRec.type= 1;
-                    smsRec.latitude = null;
-                    smsRec.longitude = null;
-
-                    smsData = {};
-                    smsData.data = smsRec;
-                    console.log(JSON.stringify(smsData));
-                    SmsListService.cleanProcessedSms();
-                    $localStorage.unprocessedSms.push(smsRec);
-                    console.log("Process SMS on new arrival: " +
-                            JSON.stringify(SmsListService.processBulkSms(smsData)));
-                    $scope.closeCashExpenseModal();
-                } else {
-                    console.log('You are not sure');
-                }
-            });
+            $scope.selectSubCategory = function (subItem) {
+                console.log('Sub Item: ' + JSON.stringify(subItem));
+                $scope.selectedItem = subItem;
+                saveCashTransaction();
+                showPopup.close();
+            };
+            
         } else {
             console.log("Amount is 0");
         }

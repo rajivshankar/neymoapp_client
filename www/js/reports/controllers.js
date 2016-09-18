@@ -13,6 +13,7 @@
 
 controllers.controller('ListCtrl', ['$scope'
                                     , '$ionicPopup'
+                                    , '$ionicPlatform'
                                     , '$localStorage'
                                     , 'GenericRestServices'
                                     , 'AUTH_EVENTS'
@@ -23,6 +24,7 @@ controllers.controller('ListCtrl', ['$scope'
                                     , '$state'
                                     , function($scope
                                                 , $ionicPopup
+                                                , $ionicPlatform
                                                 , $localStorage
                                                 , GenericRestServices
                                                 , AUTH_EVENTS
@@ -38,6 +40,15 @@ controllers.controller('ListCtrl', ['$scope'
     }catch (e) {
         console.log('Error in delete Url Path: ' + JSON.stringify(e));
     }
+    
+    $ionicPlatform.ready(function() {
+        if (analytics) {
+            var viewName = $stateParams.listKey;
+            analytics.trackView(viewName);
+            console.log('View tracked by analytics: ' + viewName);
+        }
+    });
+    
     // for offline work
     var listKey = $stateParams.listKey
     $scope.refreshData = function (link) {

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html ng-app="moneyProApp">
+    <body ng-controller="DashCtrl">
+<!--
+        <h6>
+            Category Selected:
+            <span ng-bind="selectedItem.category"></span>
+        </h6>
+-->
+        <div class="row row-category" 
+             ng-repeat="row in subCategoriesGrid">
+            <div class="col text-center col-category"
+                 ng-repeat="item in row">
+                <div ng-click="selectSubCategory(item)">
+                    <button class="button button-outline button-category"
+                            ng-class="item.icon_colour">
+                        <i class="icon-category"
+                           ng-class="[item.mdiOrIcon, item.icon_name]"></i>
+                        <div></div>
+                    </button><br>
+                    <small><span class="text-category"
+                                 ng-bind="item.category"></span></small>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

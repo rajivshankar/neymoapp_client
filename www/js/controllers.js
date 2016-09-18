@@ -57,6 +57,11 @@ controllers.controller('AppCtrl', ['$scope'
     $ionicPlatform.ready(function() {
         $scope.debugMode = $sessionStorage.debugMode;
         console.log("$scope.debugMode: " + $scope.debugMode)
+
+        if (analytics && $localStorage.userID) {
+            analytics.setUserId($localStorage.userID);
+            console.log('Analytics set with userID:' + $localStorage.userID);
+        }
         
         if(SMS) {
             var setSmsOptions = function () {

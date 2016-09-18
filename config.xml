@@ -45,4 +45,5 @@
     <allow-navigation href="*" />
     <allow-intent href="*" />
     <plugin name="cordova-plugin-background-mode" spec="https://github.com/katzer/cordova-plugin-background-mode.git" />
+    <plugin name="cordova-plugin-google-analytics" spec="https://github.com/danwilson/google-analytics-plugin.git" />
 </widget>

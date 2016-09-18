@@ -60,7 +60,14 @@ mainApp.run(['$localStorage'
         cordova.plugins.backgroundMode.configure({
             silent: true
         });
-    
+
+        if(typeof analytics !== undefined) {
+            analytics.startTrackerWithId("UA-83953155-1");
+            console.log('Tracker started with ID: UA-83953155-1');
+        } else {
+            console.log("Google Analytics Unavailable");
+        }
+
         if (window.StatusBar) {
           // org.apache.cordova.statusbar required
           StatusBar.styleDefault();
