@@ -228,6 +228,6 @@ controllers.controller('ReportsCtrl', ['$scope'
                 console.log('Tapped!', res);
             });
         }
-    }
+    };
 }]);
  

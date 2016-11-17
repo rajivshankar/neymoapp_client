@@ -150,7 +150,7 @@ controllers.controller('DashCtrl', ['$scope'
                 categoriesList[i].icon_name = "";
             }
             try {
-                categoriesList[i].icon_colour = 'button-' + categoriesList[i].icon_colour;
+//                categoriesList[i].icon_colour = 'button-' + categoriesList[i].icon_colour;
                 console.log(categoriesList[i].category + "::" + categoriesList[i].icon_colour);
             }
             catch(err) {

@@ -15,8 +15,8 @@ mainApp.constant('AUTH_EVENTS', {
 });
 
 mainApp.constant('REST_PATH', {
-    host: 'https://moneybee-20151115.herokuapp.com/restful/',
-//    host: 'https://neymo.herokuapp.com/restful/',
+//    host: 'https://moneybee-20151115.herokuapp.com/restful/',
+    host: 'https://neymo.herokuapp.com/restful/',
     device: 'device.json',
     unprocessedText: 'unprocessed_text_data/',
     smsList: 'text-data/',

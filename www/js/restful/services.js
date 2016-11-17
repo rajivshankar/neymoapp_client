@@ -107,6 +107,14 @@ services.factory('CategoriesListService', ['$resource'
     return $resource(REST_PATH.host + 'main_categories/');
 }]);
 
+services.factory('ActivityFeedService', ['$resource'
+                                , 'REST_PATH'
+                                , function ($resource
+                                            , REST_PATH
+                                                    ) {
+    return $resource(REST_PATH.host + 'activity_feed/');
+}]);
+
 services.factory('GenericRestServices', ['$resource'
                                         , function ($resource
                                                     ) {

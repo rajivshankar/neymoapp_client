@@ -1,0 +1,16 @@
+<ion-modal-view>
+    <ion-header-bar class="bar bar-header bar-positive">
+        <h1 class="title">
+            {{ activityFeedItem.header }} [{{ activityFeedItem.subheader }}]
+        </h1>
+    </ion-header-bar>
+    <ion-floating-button ng-click="closeChartModal()"
+                         has-footer="false"
+                         button-color="#ef473a"
+                         icon="ion-android-exit"
+                         icon-color="#fff">
+    </ion-floating-button>
+    <ion-content>  
+        <nvd3 options="options" data="data"></nvd3>
+    </ion-content>
+</ion-modal-view>

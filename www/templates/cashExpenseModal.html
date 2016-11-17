@@ -37,7 +37,7 @@
                  ng-repeat="item in row">
                 <div ng-click="selectCategory(item)">
                     <button class="button button-outline button-category"
-                            ng-class="item.icon_colour">
+                            ng-class="'button-' + item.icon_colour">
                         <i class="icon-category"
                            ng-class="[item.mdiOrIcon, item.icon_name]"></i>
                     </button><br>

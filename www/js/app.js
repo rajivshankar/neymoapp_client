@@ -18,6 +18,7 @@ var mainApp = angular.module('moneyProApp', ['ionic'
                                             , 'ngSanitize'
                                             , 'googlechart'
                                             , 'ion-floating-menu'
+                                            , 'nvd3'
                                         ]);
 
 mainApp.run(['$localStorage'
@@ -174,6 +175,17 @@ mainApp.config(function($stateProvider
                 templateUrl: 'templates/tab-sms.html',
                 controller: 'ListCtrl',
                 controllerAs: 'listCtrl',
+          }
+        }
+    })
+
+    .state('tab.activityFeed', {
+        url: '/activity-feed',
+        views: {
+            'tab-activity-feed': {
+                templateUrl: 'templates/tab-activity-feed.html',
+                controller: 'ActivityFeedCtrl',
+                controllerAs: 'activityFeedCtrl',
           }
         }
     })

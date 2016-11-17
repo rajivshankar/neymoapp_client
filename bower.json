@@ -32,7 +32,8 @@
     "angular-resource": "^1.5.3",
     "angular-google-chart": "^0.1.0",
     "ion-floating-menu": "^1.0.1",
-    "mdi": "^1.7.22"
+    "mdi": "^1.7.22",
+    "angular-nvd3": "^1.0.9"
   },
   "resolutions": {
     "angular-animate": "^1.4.8",
