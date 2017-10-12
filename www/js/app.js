@@ -80,7 +80,8 @@ mainApp.run(['$localStorage'
     if ($localStorage.userToken) {
         $http.defaults.headers.common.Authorization = "Token " + $localStorage.userToken;
         rekhaToken = "11cd80eb25912f4ac54dea9be4682cdf525259ab"
-//        $http.defaults.headers.common.Authorization = "Token " + rekhaToken;
+        kartikToken = "b3046c27a9bbe0c6381751a1224ace31c2e9ce9b"
+//        $http.defaults.headers.common.Authorization = "Token " + kartikToken;
     }
     AppUtils.getAppParams()
     .then( function (bool_value) {
